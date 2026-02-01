@@ -5,14 +5,13 @@
 #include <thread>
 #include <vector>
 #include <cstdint>
-// 命名空间：封装机械臂硬件相关的类和函数
 namespace arm_hardware {
 
 
 hardware_interface::CallbackReturn ArmHardwareInterface::on_init
     (const hardware_interface::HardwareInfo & info)
 {
-    (void)info;//消除WARN
+    (void)info;
 
     if(hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS)
     {
