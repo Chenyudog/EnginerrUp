@@ -65,6 +65,27 @@ hardware_interface::CallbackReturn ArmHardwareInterface::on_activate
     if(dm_driver_->getActiveCmd() == 1)
     {
         dm_driver_->set_auto_state_nuc(1);//向下位机发送数据，告诉上位机收到指令
+
+        std::vector<double> init_current_joint_pos = dm_driver_->getPosition();//读取机械臂的实际位置，防止一开始发送全为零导致突变
+        int8_t current_gripper_state = dm_driver_->getGripperState();//读取夹爪状态
+
+        double gripper_cmd = static_cast<double>(current_gripper_state);
+
+        hw_commands_position1_ = init_current_joint_pos[0];
+        hw_commands_position2_ = init_current_joint_pos[1];
+        hw_commands_position3_ = init_current_joint_pos[2];
+        hw_commands_position4_ = init_current_joint_pos[3];
+        hw_commands_position5_ = init_current_joint_pos[4];
+        hw_commands_position6_ = init_current_joint_pos[5];
+
+        hw_commands_gripper_ = gripper_cmd;
+        RCLCPP_INFO(dm_driver_->get_logger(), 
+        "硬件接口激活成功！初始指令已设为机器人实际位置：\n"
+        "关节:j1=%.4f, j2=%.4f, j3=%.4f, j4=%.4f, j5=%.4f, j6=%.4f\n"
+        "夹爪：%.2f(实际状态：%d)",
+        init_current_joint_pos[0], init_current_joint_pos[1], init_current_joint_pos[2],
+        init_current_joint_pos[3], init_current_joint_pos[4], init_current_joint_pos[5],
+        hw_commands_gripper_, current_gripper_state);
         return hardware_interface::CallbackReturn::SUCCESS;        
     }
     else
@@ -101,7 +122,7 @@ hardware_interface::return_type ArmHardwareInterface::read
     rclcpp::spin_some(dm_driver_->get_node_base_interface());
     joint_pos = dm_driver_->getPosition();
 
-    hw_states_position1_ = joint_pos[0];//hw_states_position1_已被指针所指，改变自动会传入
+    hw_states_position1_ = joint_pos[0];
     hw_states_position2_ = joint_pos[1];
     hw_states_position3_ = joint_pos[2];
     hw_states_position4_ = joint_pos[3];
@@ -175,19 +196,19 @@ std::vector<hardware_interface::CommandInterface> ArmHardwareInterface::export_c
     std::vector<hardware_interface::CommandInterface> command_interfaces;
     command_interfaces.emplace_back(
         hardware_interface::CommandInterface("joint1", "position", &hw_commands_position1_));
-                                            //这里要修改名称，对应urdf中的名称
+                                            
     command_interfaces.emplace_back(
         hardware_interface::CommandInterface("joint2", "position", &hw_commands_position2_));
     
     command_interfaces.emplace_back(
         hardware_interface::CommandInterface("joint3", "position", &hw_commands_position3_));
-                                            //这里要修改名称，对应urdf中的名称
+                                            
     command_interfaces.emplace_back(
         hardware_interface::CommandInterface("joint4", "position", &hw_commands_position4_));
 
     command_interfaces.emplace_back(
         hardware_interface::CommandInterface("joint5", "position", &hw_commands_position5_));
-                                            //这里要修改名称，对应urdf中的名称
+                                           
     command_interfaces.emplace_back(
         hardware_interface::CommandInterface("joint6", "position", &hw_commands_position6_));
     
