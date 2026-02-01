@@ -20,7 +20,8 @@ public:
           stop_sub_(false), auto_state_mcu_(0), auto_state_nuc_(0), gripper_state_(0)
     {
         // 初始化关节数据数组
-        for (int i = 0; i < JOINT_NUM; i++) {
+        for (int i = 0; i < JOINT_NUM; i++) 
+        {
             joint_positions_[i] = 0.0;
             joint_velocities_[i] = 0.0;
         }
@@ -30,14 +31,16 @@ public:
             "joint_cmd_from_moveit2", 
             rclcpp::QoS(10)
         );
-        if (!pub_moveit2_arm_cmd_to_nuc_) {
+        if (!pub_moveit2_arm_cmd_to_nuc_) 
+        {
             RCLCPP_ERROR(this->get_logger(), "发布者未初始化，无法发布关节指令！");
             return;
         }
 
         sub_arm_state_ = this->create_subscription<rmctrl_msgs::msg::ArmStateData>(
             "/joint_state_sub_from_mcu", rclcpp::QoS(10),
-            [this](const rmctrl_msgs::msg::ArmStateData::SharedPtr msg) {
+            [this](const rmctrl_msgs::msg::ArmStateData::SharedPtr msg) 
+            {
                 std::lock_guard<std::mutex> lock(joint_mutex_);
                 joint_positions_[0] = -msg->joint1_position;
                 joint_positions_[1] = msg->joint2_position;
@@ -45,15 +48,16 @@ public:
                 joint_positions_[3] = msg->joint4_position;
                 joint_positions_[4] = -msg->joint5_position;
                 joint_positions_[5] = -msg->joint6_position;
-
+        //-----有多个正负号的原因：不是si山代码，是达妙电机转向方向不统一，导致与坐标轴不符-----//
                 joint_velocities_[0] = msg->joint1_velocity;
                 joint_velocities_[1] = msg->joint2_velocity;
                 joint_velocities_[2] = msg->joint3_velocity;
                 joint_velocities_[3] = msg->joint4_velocity;
                 joint_velocities_[4] = -msg->joint5_velocity;
                 joint_velocities_[5] = -msg->joint6_velocity;
-
-                gripper_state_ = (msg->gripper_state > 0.5) ? 0.0 : 0.06;
+                
+                //硬件规范写了必须是double类型，而且传回的是位置，这里用状态替代
+                gripper_state_ = (msg->gripper_state > 0.5) ? 0.06 : 0.0;
                 auto_state_mcu_ = msg->auto_state;
 
                 // RCLCPP_INFO(this->get_logger(), "回调正常触发");
@@ -66,7 +70,8 @@ public:
     ~DMDriver() override {
         stop_sub_ = true;
         // 若使用了自定义线程，等待退出（可选，推荐用ROS2内置回调）
-        if (sub_thread_.joinable()) {
+        if (sub_thread_.joinable()) 
+        {
             sub_thread_.join();
         }
         RCLCPP_INFO(this->get_logger(), "DMDriver驱动已销毁");
@@ -75,7 +80,8 @@ public:
     // 原有业务接口：完全保留，仅替换日志器为this->get_logger()
     bool check_joint_state_topic_data(double timeout_sec = 1.0)
     {
-        if (!rclcpp::ok()) {
+        if (!rclcpp::ok()) 
+        {
             RCLCPP_ERROR(this->get_logger(), "ROS2没有初始化");
             return false;
         }
@@ -91,14 +97,17 @@ public:
         );
 
         const auto start_time = this->now();
-        while (rclcpp::ok()) {
+        while (rclcpp::ok()) 
+        {
             const double elapsed = (this->now() - start_time).seconds();
-            if (elapsed >= timeout_sec) {
-                RCLCPP_WARN(this->get_logger(), "话题检查超时 (%.2fs)", elapsed);
+            if (elapsed >= timeout_sec) 
+            {
+                RCLCPP_ERROR(this->get_logger(), "话题检查超时 (%.2fs)", elapsed);
                 break;
             }
             rclcpp::spin_some(this->get_node_base_interface()); // 继承的节点接口
-            if (has_data) {
+            if (has_data) 
+            {
                 RCLCPP_INFO(this->get_logger(), "接收到下位机发来的机械臂数据");
                 break;
             }
@@ -113,7 +122,8 @@ public:
     {
         std::lock_guard<std::mutex> lock(joint_mutex_);
         std::vector<double> pos_array(JOINT_NUM);
-        for (int i = 0; i < JOINT_NUM; i++) {
+        for (int i = 0; i < JOINT_NUM; i++) 
+        {
             pos_array[i] = joint_positions_[i];
         }
         return pos_array;
@@ -121,7 +131,8 @@ public:
     
     void setTargetPositionRadian(double joint_position_cmd_array[6], int8_t gripper_ctrl) 
     {
-        if (!pub_moveit2_arm_cmd_to_nuc_) {
+        if (!pub_moveit2_arm_cmd_to_nuc_) 
+        {
             RCLCPP_ERROR(this->get_logger(), "发布者未初始化，无法发送控制指令！");
             return;
         }
@@ -137,21 +148,23 @@ public:
         msg.auto_state = 1;
 
         pub_moveit2_arm_cmd_to_nuc_->publish(msg);
-        std::cout << msg.auto_state <<msg.joint1_position<< std::endl;
     }
 
-    int8_t getGripperState(void) {
+    double getGripperState(void) 
+    {
         std::lock_guard<std::mutex> lock(joint_mutex_);
         return gripper_state_;
     }
     
-    int getActiveCmd(void) {
+    int getActiveCmd(void) 
+    {
         std::lock_guard<std::mutex> lock(joint_mutex_);
         RCLCPP_INFO(this->get_logger(), "auto_state_mcu_=%d",auto_state_mcu_);
         return auto_state_mcu_;
     }
 
-    void set_auto_state_nuc(int set_state) {
+    void set_auto_state_nuc(int set_state) 
+    {
         std::lock_guard<std::mutex> lock(joint_mutex_);
         if (set_state == 1) {
             auto_state_nuc_ = 1;
@@ -171,7 +184,7 @@ private:
     rclcpp::Subscription<rmctrl_msgs::msg::ArmStateData>::SharedPtr sub_arm_state_;
     int8_t auto_state_mcu_;       
     int8_t auto_state_nuc_;       
-    int8_t gripper_state_;        
+    double gripper_state_;        
     double joint_positions_[JOINT_NUM];  
     double joint_velocities_[JOINT_NUM]; 
     std::mutex joint_mutex_;      

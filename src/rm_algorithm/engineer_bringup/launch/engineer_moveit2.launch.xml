@@ -24,7 +24,7 @@
     <node pkg="controller_manager" exec="spawner" args="arm_controller" />
     <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster" />
 
-    <include file="$(find-pkg-share armbot_moveit2)/launch/move_group.launch.py"/>
+    <include file="$(find-pkg-share armbot_moveit)/launch/move_group.launch.py"/>
 
     <node pkg="rviz2" exec="rviz2" output="screen"
         args='-d $(var display_config_path)'/> 

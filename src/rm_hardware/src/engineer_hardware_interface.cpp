@@ -7,6 +7,7 @@
 #include <cstdint>
 namespace arm_hardware {
 
+static const rclcpp::Logger LOGGER = rclcpp::get_logger("ArmHardwareInterface");
 
 hardware_interface::CallbackReturn ArmHardwareInterface::on_init
     (const hardware_interface::HardwareInfo & info)
@@ -66,9 +67,7 @@ hardware_interface::CallbackReturn ArmHardwareInterface::on_activate
         dm_driver_->set_auto_state_nuc(1);//向下位机发送数据，告诉上位机收到指令
 
         std::vector<double> init_current_joint_pos = dm_driver_->getPosition();//读取机械臂的实际位置，防止一开始发送全为零导致突变
-        int8_t current_gripper_state = dm_driver_->getGripperState();//读取夹爪状态
-
-        double gripper_cmd = static_cast<double>(current_gripper_state);
+        double current_gripper_state = dm_driver_->getGripperState();//读取夹爪状态
 
         hw_commands_position1_ = init_current_joint_pos[0];
         hw_commands_position2_ = init_current_joint_pos[1];
@@ -77,11 +76,12 @@ hardware_interface::CallbackReturn ArmHardwareInterface::on_activate
         hw_commands_position5_ = init_current_joint_pos[4];
         hw_commands_position6_ = init_current_joint_pos[5];
 
-        hw_commands_gripper_ = gripper_cmd;
+        hw_commands_gripper_ = current_gripper_state;
+
         RCLCPP_INFO(dm_driver_->get_logger(), 
         "硬件接口激活成功！初始指令已设为机器人实际位置：\n"
         "关节:j1=%.4f, j2=%.4f, j3=%.4f, j4=%.4f, j5=%.4f, j6=%.4f\n"
-        "夹爪：%.2f(实际状态：%d)",
+        "夹爪：%.2f(实际状态：%lf)",
         init_current_joint_pos[0], init_current_joint_pos[1], init_current_joint_pos[2],
         init_current_joint_pos[3], init_current_joint_pos[4], init_current_joint_pos[5],
         hw_commands_gripper_, current_gripper_state);
@@ -128,8 +128,8 @@ hardware_interface::return_type ArmHardwareInterface::read
     hw_states_position5_ = joint_pos[4];
     hw_states_position6_ = joint_pos[5];
 
-    int8_t gripper_state = dm_driver_->getGripperState();
-    hw_states_gripper_ = gripper_state;
+    hw_states_gripper_ = dm_driver_->getGripperState();
+
 
     return hardware_interface::return_type::OK;
 }
@@ -141,7 +141,7 @@ hardware_interface::return_type ArmHardwareInterface::write
     (void)time;
     (void)period;
     double joint_pos_ctrl[6];
-    int8_t gripper_ctrl;
+    double gripper_ctrl;
     joint_pos_ctrl[0] = hw_commands_position1_;
     joint_pos_ctrl[1] = hw_commands_position2_;
     joint_pos_ctrl[2] = hw_commands_position3_;
@@ -149,7 +149,8 @@ hardware_interface::return_type ArmHardwareInterface::write
     joint_pos_ctrl[4] = hw_commands_position5_;
     joint_pos_ctrl[5] = hw_commands_position6_;
 
-    if(hw_commands_gripper_ > 0.5)//double向int的转换，防止0.9999999变成0
+    
+    if(hw_commands_gripper_ > 0.03)//double向int的转换，防止0.9999999变成0
     {
         gripper_ctrl = 1;
     }
