@@ -47,14 +47,14 @@ public:
                 joint_positions_[2] = -msg->joint3_position;//与下位机相反
                 joint_positions_[3] = msg->joint4_position;
                 joint_positions_[4] = -msg->joint5_position;
-                joint_positions_[5] = -msg->joint6_position;
+                joint_positions_[5] = msg->joint6_position;
         //-----有多个正负号的原因：不是si山代码，是达妙电机转向方向不统一，导致与坐标轴不符-----//
                 joint_velocities_[0] = msg->joint1_velocity;
                 joint_velocities_[1] = msg->joint2_velocity;
                 joint_velocities_[2] = msg->joint3_velocity;
                 joint_velocities_[3] = msg->joint4_velocity;
-                joint_velocities_[4] = -msg->joint5_velocity;
-                joint_velocities_[5] = -msg->joint6_velocity;
+                joint_velocities_[4] = msg->joint5_velocity;
+                joint_velocities_[5] = msg->joint6_velocity;
                 
                 //硬件规范写了必须是double类型，而且传回的是位置，这里用状态替代
                 gripper_state_ = (msg->gripper_state > 0.5) ? 0.06 : 0.0;
