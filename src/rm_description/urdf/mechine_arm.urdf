@@ -44,7 +44,7 @@
   </joint>
 
   <!-- 第三步：附属部件 - 雷达 -->
-  <link name="radar">
+  <link name="livox_frame">
     <inertial>
       <origin xyz="8.3267E-17 3.0531E-16 -0.0049576" rpy="0 0 0" />
       <mass value="0.17859" />
@@ -67,10 +67,10 @@
       </geometry>
     </collision>
   </link>
-  <joint name="radar_joint" type="fixed">
+  <joint name="livox_frame_joint" type="fixed">
     <origin xyz="0.1572 -0.1665 0.0922" rpy="0 0 0" />
     <parent link="base_link" />
-    <child link="radar" />
+    <child link="livox_frame" />
   </joint>
 
   <!-- 第四步：机械臂连杆层级 - link1 + joint1 -->
