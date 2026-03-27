@@ -1,9 +1,8 @@
 cmds=(
-      "ros2 launch navi slam_launch.py" #启动建图
+     #  "ros2 launch navi slam_launch.py" #启动建图
       "ros2 launch navi navigation_launch.py" #启动导航
-      "ros2 topic echo /tf"
-      "ros2 topic echo /cmd_vel"
-      "ros2 launch navi rviz_launch.py" #启动rviz2
+     #  "ros2 topic echo /tf"
+     #  "ros2 topic echo /cmd_vel"
      )
      
 for cmd in "${cmds[@]}";

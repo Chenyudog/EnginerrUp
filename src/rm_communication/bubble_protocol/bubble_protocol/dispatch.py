@@ -138,4 +138,4 @@ class RobotAPI(Node):
         joint_cmd_sub_from_moveit2_list.append(msg.auto_state)
 
 
-        self.robot_serial.send_data("joint_cmd_from_moveit2", joint_cmd_sub_from_moveit2_list)
+        self.robot_serial.send_data("joint_cmd_from_moveFit2", joint_cmd_sub_from_moveit2_list)
