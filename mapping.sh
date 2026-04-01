@@ -8,7 +8,7 @@ cmds=(
       "ros2 launch navi slam_launch.py"
       "ros2 launch navi rviz_launch.py"
      )
-     
+     #启动后会出现tf报错，因为map没有开始发布，走几步就行
 for cmd in "${cmds[@]}";
 do
      echo Current CMD : "$cmd"

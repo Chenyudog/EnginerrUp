@@ -122,8 +122,8 @@ controller_server:
   ros__parameters:
     use_sim_time: False  # 是否使用仿真时间
     controller_frequency: 20.0  # 控制器更新频率（Hz）
-    min_x_velocity_threshold: 0.001  # x方向最小速度阈值（低于此值视为停止）
-    min_y_velocity_threshold: 0.001  # y方向最小速度阈值
+    min_x_velocity_threshold: 0.005  # x方向最小速度阈值（低于此值视为停止）
+    min_y_velocity_threshold: 0.005  # y方向最小速度阈值
     min_theta_velocity_threshold: 0.001  # 旋转最小速度阈值
     progress_checker_plugin: "progress_checker"  # 进度检查器插件名称
     goal_checker_plugin: "goal_checker"  # 目标检查器插件名称
@@ -132,8 +132,8 @@ controller_server:
     # 进度检查器参数
     progress_checker:
       plugin: "nav2_controller::SimpleProgressChecker"  # 简单进度检查器插件
-      required_movement_radius: 0.05  # 要求的最小移动半径（米，用于判断是否卡滞）
-      movement_time_allowance: 30.0  # 允许的最大移动时间（秒，超时则触发恢复）
+      required_movement_radius: 0.03  # 要求的最小移动半径（米，用于判断是否卡滞）
+      movement_time_allowance: 40.0  # 允许的最大移动时间（秒，超时则触发恢复）
     # 目标检查器参数
     goal_checker:
       plugin: "nav2_controller::SimpleGoalChecker"  # 简单目标检查器插件

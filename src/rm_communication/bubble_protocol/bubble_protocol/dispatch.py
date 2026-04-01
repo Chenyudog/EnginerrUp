@@ -109,8 +109,8 @@ class RobotAPI(Node):
         print(f"send data yaw:{msg.yaw},pitch{msg.pitch},pitch{msg.roll}")
 
     def ex_chassis_callback(self, msg: Twist) -> None:
-        print("接收到上位机对下位机底盘的控制命令，现在发出")
-        self.robot_serial.send_data("chassis_ctrl", [msg.linear.x, msg.linear.y, msg.linear.z,
+        print("接收到上位机对下位机底盘的控制命令，现在发出")#与下位机y和z方向相反
+        self.robot_serial.send_data("chassis_ctrl", [msg.linear.x, -msg.linear.y, msg.linear.z,
                                                      msg.angular.x, msg.angular.y, -msg.angular.z])
 
     def ex_odom_callback(self, msg: PoseWithCovariance):

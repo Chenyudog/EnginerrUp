@@ -51,8 +51,9 @@ sudo udevadm trigger  # 重新触发设备检测
 ls -l /dev/STM32H7    #检查是否生成了 /dev/STM32H7
 
 ## 构建地图+保存地图
-1、启动pre.sh + ros2 launch navi slam_launch.py + rviz2 
-2、ros2 service call /slam_toolbox/save_map slam_toolbox/srv/SaveMap "{filename: '~/ros2_ws/maps/my_slam_map', map_format: 'pgm'}"
+1、启动 mapping.sh 开始建图
+2、cd maps目录
+2、ros2 run nav2_map_server map_saver_cli -f room202-5 保存地图
 
 
 ### 配置Moveit2环境指令:
