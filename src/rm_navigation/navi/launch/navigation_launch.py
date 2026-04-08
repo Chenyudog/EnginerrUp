@@ -17,7 +17,7 @@ def generate_launch_description():
     use_sim_time = launch.substitutions.LaunchConfiguration(
         'use_sim_time', default='false')
     map_yaml_path = launch.substitutions.LaunchConfiguration(
-        'maps', default=os.path.join(navigation2_dir, 'maps', '9-room-2.yaml'))#在此修改地图名称
+        'maps', default=os.path.join(navigation2_dir, 'maps', 'room202-2.yaml'))#真车导航在此修改地图名称，优先级高于参数文件
     nav2_param_path = launch.substitutions.LaunchConfiguration(
         'params_file', default=os.path.join(navigation2_dir, 'params', 'nav2_params.yaml'))
 

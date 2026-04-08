@@ -5,8 +5,8 @@ cmds=(
       "ros2 launch pointcloud_to_laserscan pointcloud_to_laserscan_launch.py" #压缩3D雷达为2D
       "ros2 launch point_lio mapping_mid360.launch.py" #启动point_lio，发布里程计
       "ros2 launch bubble_protocol engineer_up_serial_launch.py" #连接下位机
-      "ros2 launch navi slam_launch.py"
-      "ros2 launch navi rviz_launch.py"
+      "ros2 launch navi slam_launch.py" #开始建图
+      "ros2 launch navi rviz_launch.py" #通过rviz2显示
      )
      #启动后会出现tf报错，因为map没有开始发布，走几步就行
 for cmd in "${cmds[@]}";

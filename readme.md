@@ -10,6 +10,7 @@ pip3 install pyserial   下载串口包
 ## [初始配置mid360网址]
 (https://blog.csdn.net/hong_j_0826/article/details/142236061?ops_request_misc=elastic_search_misc&request_id=054fb5058c3662aaeb9b98fe1ec9e704&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~ElasticSearch~search_v2-1-142236061-null-null.142^v102^pc_search_result_base3&utm_term=ros2%20humble%20%E5%A6%82%E4%BD%95%E5%88%9D%E6%AD%A5%E4%BD%BF%E7%94%A8Livox-mid-%E6%BF%80%E5%85%89%E9%9B%B7%E8%BE%BE&spm=1018.2226.3001.4187)
 
+
 ## 如何配置代码于自己电脑
 1、git clone https://github.com/poppywork/EnginerrUp.git
 2、cd src/rm_driver
@@ -25,6 +26,7 @@ pip3 install pyserial   下载串口包
 12、./build.sh humble  
 13、cd 自己工作空间
 14、colcon build (如果显示黄色,再构建一次)
+
 
 
 ## 连接雷达权限需求
@@ -53,27 +55,33 @@ ls -l /dev/STM32H7    #检查是否生成了 /dev/STM32H7
 ## 构建地图+保存地图
 1、启动 mapping.sh 开始建图
 2、cd maps目录
-2、ros2 run nav2_map_server map_saver_cli -f room202-5 保存地图
+3、ros2 run nav2_map_server map_saver_cli -f room202-5 保存地图
+
+### 建图导航小tips
+1、/home/zrk/EnginerrUp/src/rm_navigation/navi/params/nav2_params.yaml 在这个文件修改导航的参数
+官方文档在https://fishros.org/doc/nav2/plugins/index.html#planners
+2、
 
 
-### 配置Moveit2环境指令:
+## 配置Moveit2环境指令:
 sudo apt install ros-humble-moveit（报错了就修复一下源，报错AI可以解答你）
 sudo apt install ros-humble-moveit-setup-assistant
 sudo apt install ros-humble-moveit-*
 
 网址:https://blog.csdn.net/joyopirate/article/details/129424607?ops_request_misc=elastic_search_misc&request_id=5c41293e69b7297bf39eefe8573b74ef&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_click~default-1-129424607-null-null.142^v102^pc_search_result_base8&utm_term=%E5%9C%A8ros2%E4%B8%AD%EF%BC%8C%E9%80%9A%E8%BF%87Moveit2&spm=1018.2226.3001.4187
 
-### 重新修改moveit2模型
+## 重新修改moveit2模型
 1、正常导出urdf文件夹
-2、修改joint_limits.yaml文件里的报错，将整数改为小数
+2、修改joint_limits.yaml文件里的报错，将整数改为小数(还有initial_position的)
 3、在moveit_controllers.yaml的控制器后面加上
     action_ns: follow_joint_trajectory
     default: true
-4、将新出的config的文件覆盖掉原来的yaml文件
+4、将新出的config的文件覆盖掉原来的engineer_bringup里的yaml文件(ros2_controller文件)
 5、在urdf文件更新ros2_control标签的内容，把${initial_positions['joint_gripper_right']}这些换成想要的数字，比如0.0
 6、打开engineer_bingup  launch文件启动机器人
 7、启动控制器
 8、向控制器发布话题即可
 
-
+如何继续部署到工程车上:
+1、修改engineer_moveit2.launch.xml上的包名，文件名等
 

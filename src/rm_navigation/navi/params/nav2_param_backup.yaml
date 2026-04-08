@@ -49,15 +49,15 @@ amcl:
 
 amcl_map_client:
   ros__parameters:
-    use_sim_time: False  # AMCL地图客户端是否使用仿真时间
+    use_sim_time: false  # AMCL地图客户端是否使用仿真时间
 
 amcl_rclcpp_node:
   ros__parameters:
-    use_sim_time: False  # AMCL节点是否使用仿真时间
+    use_sim_time: false  # AMCL节点是否使用仿真时间
 
 bt_navigator:
   ros__parameters:
-    use_sim_time: False  # 是否使用仿真时间
+    use_sim_time: false  # 是否使用仿真时间
     global_frame: map  # 全局坐标系ID
     robot_base_frame: base_link  # 机器人基坐标系ID
     odom_topic: /odom  # 里程计话题
@@ -116,14 +116,14 @@ bt_navigator:
 
 bt_navigator_rclcpp_node:
   ros__parameters:
-    use_sim_time: False  # BT导航器节点是否使用仿真时间
+    use_sim_time: false  # BT导航器节点是否使用仿真时间
 
 controller_server:
   ros__parameters:
-    use_sim_time: False  # 是否使用仿真时间
+    use_sim_time: false  # 是否使用仿真时间
     controller_frequency: 20.0  # 控制器更新频率（Hz）
-    min_x_velocity_threshold: 0.005  # x方向最小速度阈值（低于此值视为停止）
-    min_y_velocity_threshold: 0.005  # y方向最小速度阈值
+    min_x_velocity_threshold: 0.001  # x方向最小速度阈值（低于此值视为停止）
+    min_y_velocity_threshold: 0.001  # y方向最小速度阈值
     min_theta_velocity_threshold: 0.001  # 旋转最小速度阈值
     progress_checker_plugin: "progress_checker"  # 进度检查器插件名称
     goal_checker_plugin: "goal_checker"  # 目标检查器插件名称
@@ -132,58 +132,58 @@ controller_server:
     # 进度检查器参数
     progress_checker:
       plugin: "nav2_controller::SimpleProgressChecker"  # 简单进度检查器插件
-      required_movement_radius: 0.03  # 要求的最小移动半径（米，用于判断是否卡滞）
-      movement_time_allowance: 40.0  # 允许的最大移动时间（秒，超时则触发恢复）
+      required_movement_radius: 0.05  # 要求的最小移动半径（米，用于判断是否卡滞）
+      movement_time_allowance: 30.0  # 允许的最大移动时间（秒，超时则触发恢复）
     # 目标检查器参数
     goal_checker:
       plugin: "nav2_controller::SimpleGoalChecker"  # 简单目标检查器插件
       xy_goal_tolerance: 0.4  # xy方向到达目标的容忍误差（米）
-      yaw_goal_tolerance: 0.3  # 航向角到达目标的容忍误差（弧度）
+      yaw_goal_tolerance: 0.5  # 航向角到达目标的容忍误差（弧度）
       stateful: True  # 是否启用状态化检查（接近目标后严格检查）
     # DWB局部规划器参数（作为控制器插件）
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"  # DWB局部规划器插件
       debug_trajectory_details: True  # 是否输出轨迹调试信息
-      min_vel_x: -0.5  # x方向最小速度（米/秒）
-      min_vel_y: -0.5  # y方向最小速度（米/秒）
+      min_vel_x: -0.3  # x方向最小速度（米/秒）
+      min_vel_y: -0.3  # y方向最小速度（米/秒）
       max_vel_x: 0.8  # x方向最大速度（米/秒）
       max_vel_y: 0.8  # y方向最大速度（米/秒）
-      max_vel_theta: 0.7 # 最大旋转速度
+      max_vel_theta: 0.8 # 最大旋转速度（原0.5 → 改为0.3，低速安全）
       min_speed_xy: 0.0  # xy方向最小合速度（原0.5 → 改为0.0，允许原地旋转）
       max_speed_xy: 1.2  # xy方向最大合速度（米/秒）
-      min_speed_theta: 0.3  # 最小旋转速度（原0.0 → 改为0.05，防止抖动）
+      min_speed_theta: 0.2  # 最小旋转速度（原0.0 → 改为0.05，防止抖动）
       acc_lim_x: 0.5  # x方向加速度限制（米/秒²）
       acc_lim_y: 0.5  # y方向加速度限制（米/秒²）
-      acc_lim_theta: 0.6  # 旋转加速度限制
+      acc_lim_theta: 0.6  # 旋转加速度限制（原0.3 → 改为0.2，低速）
       decel_lim_x: -0.5  # x方向减速度限制（米/秒²）
       decel_lim_y: -0.5  # y方向减速度限制（米/秒²）
-      decel_lim_theta: -0.5  # 旋转减速度限制
-      vx_samples: 30 # x方向速度采样数
-      vy_samples: 30  # y方向速度采样数
+      decel_lim_theta: -0.5  # 旋转减速度限制（原-0.5 → 改为-0.2，低速）
+      vx_samples: 25 # x方向速度采样数
+      vy_samples: 25  # y方向速度采样数
       vtheta_samples: 15  # 旋转速度采样数（原0 → 改为20，开启旋转采样）
-      sim_time: 1.75  # 轨迹仿真时间（秒）
+      sim_time: 1.0  # 轨迹仿真时间（秒）
       linear_granularity: 0.05  # 线性方向轨迹 granularity（米）
       angular_granularity: 0.025  # 角方向轨迹 granularity（弧度）
       transform_tolerance: 0.2  # TF变换容忍时间（秒）
       xy_goal_tolerance: 0.3  # xy方向目标容忍度（米）
-      trans_stopped_velocity: 0.05  # 平移停止的速度阈值（米/秒）
+      trans_stopped_velocity: 0.08  # 平移停止的速度阈值（米/秒）
       short_circuit_trajectory_evaluation: True  # 是否提前终止差轨迹的评价
       stateful: True  # 是否启用状态化控制（接近目标时调整行为）
       critics: ["RotateToGoal", "Oscillation", "BaseObstacle", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]  # 评价器列表
       BaseObstacle.scale: 75.0  # 基础障碍物评价器的权重
       PathAlign.scale: 45.0  # 路径对齐评价器的权重
-      PathAlign.forward_point_distance: 0.12  # 路径对齐的前向点距离（米）
+      PathAlign.forward_point_distance: 0.08  # 路径对齐的前向点距离（米）
       GoalAlign.scale: 30.0  # 目标对齐评价器的权重
-      GoalAlign.forward_point_distance: 0.12  # 目标对齐的前向点距离（米）
+      GoalAlign.forward_point_distance: 0.08  # 目标对齐的前向点距离（米）
       PathDist.scale: 32.0  # 路径距离评价器的权重
       GoalDist.scale: 24.0  # 目标距离评价器的权重
-      RotateToGoal.scale: 10.0  # 转向目标评价器权重
+      RotateToGoal.scale: 30.0  # 转向目标评价器权重（原0.0 → 改为30.0，开启转向）
       RotateToGoal.slowing_factor: 3.0  # 转向目标时的减速因子
       RotateToGoal.lookahead_time: 0.5  # 转向目标的前瞻时间（秒）
 
 controller_server_rclcpp_node:
   ros__parameters:
-    use_sim_time: False  # 控制器节点是否使用仿真时间
+    use_sim_time: false  # 控制器节点是否使用仿真时间
 
 local_costmap:
   local_costmap:
@@ -192,7 +192,7 @@ local_costmap:
       publish_frequency: 8.0  # 代价地图发布频率（Hz）
       global_frame: odom  # 局部代价地图的全局坐标系（里程计系）
       robot_base_frame: base_link  # 机器人基坐标系
-      use_sim_time: False  # 是否使用仿真时间
+      use_sim_time: false  # 是否使用仿真时间
       rolling_window: true  # 是否使用滚动窗口（随机器人移动更新）
       width: 5  # 代价地图宽度（米）
       height: 5  # 代价地图高度（米）
@@ -225,10 +225,10 @@ local_costmap:
       always_send_full_costmap: True  # 是否总是发送完整代价地图
   local_costmap_client:
     ros__parameters:
-      use_sim_time: False  # 局部代价地图客户端是否使用仿真时间
+      use_sim_time: false  # 局部代价地图客户端是否使用仿真时间
   local_costmap_rclcpp_node:
     ros__parameters:
-      use_sim_time: False  # 局部代价地图节点是否使用仿真时间
+      use_sim_time: false  # 局部代价地图节点是否使用仿真时间
 
 
 global_costmap:
@@ -238,7 +238,7 @@ global_costmap:
       publish_frequency: 8.0  # 发布频率（Hz）
       global_frame: map  # 全局坐标系（地图系）
       robot_base_frame: base_link  # 机器人基坐标系
-      use_sim_time: False  # 是否使用仿真时间
+      use_sim_time: false  # 是否使用仿真时间
       footprint: "[ [0.3, 0.3], [0.3, -0.3], [-0.3, -0.3], [-0.3, 0.3] ]"
       resolution: 0.05  # 分辨率（米/单元格）
       track_unknown_space: true  # 是否追踪未知区域
@@ -264,41 +264,41 @@ global_costmap:
       always_send_full_costmap: True  # 是否总是发送完整代价地图
   global_costmap_client:
     ros__parameters:
-      use_sim_time: False  # 全局代价地图客户端是否使用仿真时间
+      use_sim_time: false  # 全局代价地图客户端是否使用仿真时间
   global_costmap_rclcpp_node:
     ros__parameters:
-      use_sim_time: False  # 全局代价地图节点是否使用仿真时间
+      use_sim_time: false  # 全局代价地图节点是否使用仿真时间
 
 
 map_server:
   ros__parameters:
-    use_sim_time: False  # 是否使用仿真时间
-    yaml_filename: "src/rm_navigation/navi/maps/room202-3.yaml"  # 地图配置文件路径
+    use_sim_time: false  # 是否使用仿真时间
+    yaml_filename: "src/rm_navigation/navi/maps/room202-3.yaml"  # 地图配置文件路径，优先级低于launch文件所写
 
 map_saver:
   ros__parameters:
-    use_sim_time: False  # 是否使用仿真时间
+    use_sim_time: false  # 是否使用仿真时间
     save_map_timeout: 5000.0  # 保存地图的超时时间（毫秒）
     free_thresh_default: 0.25  # 默认为自由空间的阈值（占空比）
     occupied_thresh_default: 0.65  # 默认为障碍物的阈值（占空比）
-    map_subscribe_transient_local: False  # 是否订阅瞬态本地地图
+    map_subscribe_transient_local: false  # 是否订阅瞬态本地地图
 
 
 planner_server:
   ros__parameters:
     expected_planner_frequency: 20.0  # 预期规划器频率（Hz）
-    use_sim_time: False  # 是否使用仿真时间
+    use_sim_time: false  # 是否使用仿真时间
     planner_plugins: ["GridBased"]  # 规划器插件列表
     GridBased:  # 基于网格的规划器
       plugin: "nav2_smac_planner/SmacPlanner2D"  # SMAC规划器插件（2D）
       tolerance: 0.2  # 到达目标的容忍误差（米）
-      use_astar: true  # 是否使用A*算法（false则使用Dijkstra）
+      use_astar: true  # 是否使用A*算法（false则使用Dijkstra）   
       allow_unknown: true  # 是否允许路径经过未知区域
     
 
 planner_server_rclcpp_node:
   ros__parameters:
-    use_sim_time: False  # 规划器节点是否使用仿真时间
+    use_sim_time: false  # 规划器节点是否使用仿真时间
 
 
 recoveries_server:
@@ -316,15 +316,15 @@ recoveries_server:
     global_frame: odom  # 全局坐标系
     robot_base_frame: base_link  # 机器人基坐标系
     transform_timeout: 0.1  # TF变换超时时间（秒）
-    use_sim_time: False  # 是否使用仿真时间
+    use_sim_time: false  # 是否使用仿真时间
     simulate_ahead_time: 2.0  # 前瞻仿真时间（秒）
-    max_rotational_vel: 0.3  # 最大旋转速度（原0.5 → 改为0.3，低速）
-    min_rotational_vel: 0.05  # 最小旋转速度（原0.1 → 改为0.05，低速）
-    rotational_acc_lim: 1.0  # 旋转加速度限制（原3.2 → 改为1.0，安全）
+    max_rotational_vel: 0.6  # 最大旋转速度
+    min_rotational_vel: 0.3  # 最小旋转速度
+    rotational_acc_lim: 0.8  # 旋转加速度限制
 
 robot_state_publisher:
   ros__parameters:
-    use_sim_time: False  # 机器人状态发布器是否使用仿真时间
+    use_sim_time: false  # 机器人状态发布器是否使用仿真时间
 
 
 velocity_smoother:
@@ -333,7 +333,7 @@ velocity_smoother:
     smoothing_frequency: 20.0          # 平滑器输出频率（Hz）
     scale_velocities: false            # 是否缩放速度（保留原始方向）
     feedback: "OPEN_LOOP"              # 反馈模式（OPEN_LOOP / CLOSED_LOOP）
-    max_velocity: [0.8, 0.8, 0.6]   # 最大速度 [x,y,theta] 旋转改为0.3
+    max_velocity: [0.8, 0.8, 0.6]   # 最大速度 
     min_velocity: [-0.3, -0.3, -0.3] # 最小旋转速度
     max_accel: [2.0, 2.0, 1.0]        # 旋转加速度
     max_decel: [-2.0, -2.0, -1.0]     # 旋转减速度
