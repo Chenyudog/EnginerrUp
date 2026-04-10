@@ -10,7 +10,7 @@
 
 #define JOINT_NUM 6 //关节数量
 
-// 核心改造：DMDriver继承rclcpp::Node，直接拥有节点的所有能力
+
 class DMDriver : public rclcpp::Node
 {
 public:
@@ -42,11 +42,12 @@ public:
             [this](const rmctrl_msgs::msg::ArmStateData::SharedPtr msg) 
             {
                 std::lock_guard<std::mutex> lock(joint_mutex_);
+            //在此次修正接收数据的电机转向，注意是接收
                 joint_positions_[0] = -msg->joint1_position;
                 joint_positions_[1] = msg->joint2_position;
                 joint_positions_[2] = -msg->joint3_position;//与下位机相反
-                joint_positions_[3] = msg->joint4_position;
-                joint_positions_[4] = -msg->joint5_position;
+                joint_positions_[3] = -msg->joint4_position;
+                joint_positions_[4] = msg->joint5_position;
                 joint_positions_[5] = msg->joint6_position;
         //-----有多个正负号的原因：不是si山代码，是达妙电机转向方向不统一，导致与坐标轴不符-----//
                 joint_velocities_[0] = msg->joint1_velocity;
@@ -57,7 +58,7 @@ public:
                 joint_velocities_[5] = msg->joint6_velocity;
                 
                 //硬件规范写了必须是double类型，而且传回的是位置，这里用状态替代
-                gripper_state_ = (msg->gripper_state > 0.5) ? 0.06 : 0.0;
+                gripper_state_ = (msg->gripper_state < 0.5) ? -0.03 : 0.0;
                 auto_state_mcu_ = msg->auto_state;
 
                 // RCLCPP_INFO(this->get_logger(), "回调正常触发");
@@ -67,7 +68,8 @@ public:
     }
 
     // 析构函数：自动调用父类析构，无需手动释放节点
-    ~DMDriver() override {
+    ~DMDriver() override 
+    {
         stop_sub_ = true;
         // 若使用了自定义线程，等待退出（可选，推荐用ROS2内置回调）
         if (sub_thread_.joinable()) 
@@ -77,7 +79,6 @@ public:
         RCLCPP_INFO(this->get_logger(), "DMDriver驱动已销毁");
     }
 
-    // 原有业务接口：完全保留，仅替换日志器为this->get_logger()
     bool check_joint_state_topic_data(double timeout_sec = 1.0)
     {
         if (!rclcpp::ok()) 
@@ -138,7 +139,8 @@ public:
         }
 
         rmctrl_msgs::msg::ArmCtrlData msg;
-        msg.joint1_position = -joint_position_cmd_array[0];
+        //在此次修正发送命令的电机转向，注意发送
+        msg.joint1_position = joint_position_cmd_array[0];
         msg.joint2_position = joint_position_cmd_array[1];
         msg.joint3_position = -joint_position_cmd_array[2];//与下位机相反
         msg.joint4_position = joint_position_cmd_array[3];
