@@ -88,8 +88,10 @@ sudo apt install ros-humble-moveit-*
 
 
 ##如何配置深度相机环境
+#1.配必要文件
 sudo apt install libgflags-dev  ros-$ROS_DISTRO-image-geometry ros-$ROS_DISTRO-camera-info-manager\
 ros-$ROS_DISTRO-image-transport ros-$ROS_DISTRO-image-publisher libgoogle-glog-dev libusb-1.0-0-dev libeigen3-dev
+sudo apt install -y nlohmann-json3-dev
 以下代码在任意目录下皆可
 git clone https://github.com/libuvc/libuvc.git
 cd libuvc
@@ -97,21 +99,20 @@ mkdir build && cd build
 cmake .. && make -j4
 sudo make install
 sudo ldconfig # Refreshing the link library
+#2.创建工作空间
+mkdir ~/工作空间/src
+提取文件    并放在src目录下     链接: https://pan.baidu.com/s/1Z1ljB5KPBhKWVNzE-obqsw?pwd=i485 提取码: i485 
 
-mkdir -p ~/ros2_ws/src（创建工作空间 ros2_ws）可改
-Extract and copy openNISDk_ROS2_xxx.tar.gz to ~/ros2_ws/src/
-
-cd ~/ros2_ws/src/ros2_astra_camera/astra_camera/scripts
+cd ~/工作空间/src/ros2_astra_camera/astra_camera/scripts
 sudo bash install.sh
 sudo udevadm control --reload-rules && sudo udevadm trigger
 
 编译：
  cd ~/ros2_ws
-source /opt/ros/galactic/setup.bash 
+source /opt/ros/humble/setup.bash 
 colcon build --event-handlers  console_direct+  --cmake-args  -DCMAKE_BUILD_TYPE=Release
-
-驱动：
-source /opt/ros/galactic/setup.bash 
+驱动：(根据自己相机打开对应的launch 文件）
+source /opt/ros/humble/setup.bash 
 source ./install/setup.bash 
 ros2 launch astra_camera astra.launch.xml
 
