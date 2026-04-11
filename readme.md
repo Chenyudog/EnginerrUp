@@ -88,32 +88,38 @@ sudo apt install ros-humble-moveit-*
 
 
 ##如何配置深度相机环境
-#1.配必要文件
-sudo apt install libgflags-dev  ros-$ROS_DISTRO-image-geometry ros-$ROS_DISTRO-camera-info-manager\
-ros-$ROS_DISTRO-image-transport ros-$ROS_DISTRO-image-publisher libgoogle-glog-dev libusb-1.0-0-dev libeigen3-dev
-sudo apt install -y nlohmann-json3-dev
+#一、配必要文件
+1.sudo apt install libgflags-dev  
+2.sudo apt install ros-$ROS_DISTRO-image-geometry 
+3.sudo apt install ros-$ROS_DISTRO-camera-info-manager
+4.sudo apt install ros-$ROS_DISTRO-image-transport 
+5.sudo apt install ros-$ROS_DISTRO-image-publisher 
+6.sudo apt install libgoogle-glog-dev 
+7.sudo apt install libusb-1.0-0-dev 
+8.sudo apt install libeigen3-dev
+9.sudo apt install -y nlohmann-json3-dev
 以下代码在任意目录下皆可
-git clone https://github.com/libuvc/libuvc.git
-cd libuvc
-mkdir build && cd build
-cmake .. && make -j4
-sudo make install
-sudo ldconfig # Refreshing the link library
-#2.创建工作空间
-mkdir ~/工作空间/src
-提取文件    并放在src目录下(替换掉源代码的ros2_astra_camera文件夹) 
+10.git clone https://github.com/libuvc/libuvc.git
+11.cd libuvc
+12.mkdir build && cd build
+13.cmake .. && make -j4
+14.sudo make install
+15.sudo ldconfig # Refreshing the link library
+#二、创建工作空间
+16.mkdir ~/工作空间/src
+17.提取文件    并放在src目录下(替换掉源代码的ros2_astra_camera文件夹) 
 链接: https://pan.baidu.com/s/1Z1ljB5KPBhKWVNzE-obqsw?pwd=i485 提取码: i485 
 
-cd ~/工作空间/src/ros2_astra_camera/astra_camera/scripts
-sudo bash install.sh
-sudo udevadm control --reload-rules && sudo udevadm trigger
+18.cd ~/工作空间/src/ros2_astra_camera/astra_camera/scripts
+19.sudo bash install.sh
+20.sudo udevadm control --reload-rules && sudo udevadm trigger
 
 编译：
- cd ~/ros2_ws
-source /opt/ros/humble/setup.bash 
-colcon build --event-handlers  console_direct+  --cmake-args  -DCMAKE_BUILD_TYPE=Release
-驱动：(根据自己相机打开对应的launch 文件）
-source /opt/ros/humble/setup.bash 
-source ./install/setup.bash 
-ros2 launch astra_camera astra.launch.xml
+21. cd ~/ros2_ws
+22.source /opt/ros/humble/setup.bash 
+23.colcon build --event-handlers  console_direct+  --cmake-args  -DCMAKE_BUILD_TYPE=Release
+24.驱动：(根据自己相机打开对应的launch 文件）
+25.source /opt/ros/humble/setup.bash 
+26.source ./install/setup.bash 
+27.ros2 launch astra_camera astra.launch.xml
 
