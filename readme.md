@@ -101,7 +101,8 @@ sudo make install
 sudo ldconfig # Refreshing the link library
 #2.创建工作空间
 mkdir ~/工作空间/src
-提取文件    并放在src目录下     链接: https://pan.baidu.com/s/1Z1ljB5KPBhKWVNzE-obqsw?pwd=i485 提取码: i485 
+提取文件    并放在src目录下(替换掉源代码的ros2_astra_camera文件夹) 
+链接: https://pan.baidu.com/s/1Z1ljB5KPBhKWVNzE-obqsw?pwd=i485 提取码: i485 
 
 cd ~/工作空间/src/ros2_astra_camera/astra_camera/scripts
 sudo bash install.sh
