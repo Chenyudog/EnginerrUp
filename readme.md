@@ -107,15 +107,15 @@ sudo apt install ros-humble-moveit-*
 15.sudo ldconfig # Refreshing the link library
 #二、创建工作空间
 16.mkdir ~/工作空间/src
-17.提取文件    并放在src目录下(替换掉源代码的ros2_astra_camera文件夹) 
-链接: https://pan.baidu.com/s/1Z1ljB5KPBhKWVNzE-obqsw?pwd=i485 提取码: i485 
+17.提取文件    并放在src目录下(替换掉源代码的ros2_astra_camera功能包) 
+git clone https://github.com/Chenyudog/ros2_astra_camera
 
 18.cd ~/工作空间/src/ros2_astra_camera/astra_camera/scripts
 19.sudo bash install.sh
 20.sudo udevadm control --reload-rules && sudo udevadm trigger
 
 编译：
-21. cd ~/ros2_ws
+21.cd ~/ros2_ws
 22.source /opt/ros/humble/setup.bash 
 23.colcon build --event-handlers  console_direct+  --cmake-args  -DCMAKE_BUILD_TYPE=Release
 24.驱动：(根据自己相机打开对应的launch 文件）
