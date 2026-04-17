@@ -87,7 +87,7 @@ sudo apt install ros-humble-moveit-*
 
 
 
-##如何配置深度相机环境
+## 如何配置深度相机环境
 #一、配必要文件
 1.sudo apt install libgflags-dev  
 2.sudo apt install ros-$ROS_DISTRO-image-geometry 
