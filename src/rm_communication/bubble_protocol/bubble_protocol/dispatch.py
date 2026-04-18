@@ -142,7 +142,7 @@ class RobotAPI(Node):
     def ex_voice_control_callback(self, msg: VoiceControl):
         print("接收到上位机对下位机语音控制的命令,现在通过串口发送出去")
         voice_control_list = []
-        voice_control_list.append(msg.speed_vx)
-        voice_control_list.append(msg.speed_vy)
-        voice_control_list.append(msg.speed_vw)
+        voice_control_list.append(msg.vx)
+        voice_control_list.append(msg.vy)
+        voice_control_list.append(msg.vw)
         self.robot_serial.send_data("voice_control", voice_control_list)
