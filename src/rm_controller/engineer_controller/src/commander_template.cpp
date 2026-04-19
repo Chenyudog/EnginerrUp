@@ -6,7 +6,7 @@
 #include <example_interfaces/msg/float64_multi_array.hpp>
 #include <rmctrl_msgs/msg/pose_command.hpp>
 #include <rmctrl_msgs/msg/arm_state_data.hpp>
-#include <std_msgs/msg/int8.hpp>
+#include <std_msgs/msg/int32.hpp>
 
 using MoveGroupInterface = moveit::planning_interface::MoveGroupInterface;
 using Bool = example_interfaces::msg::Bool;
@@ -21,7 +21,7 @@ enum StepType { JOINT, GRIPPER_OPEN, GRIPPER_CLOSE };
 // 步骤定义
 struct Step {
     StepType type;
-    std::vector<double> joint_angles; 
+    std::vector<double> joint_angles;  // 仅当 type == JOINT 时有效
 };
 
 class Commander
@@ -31,51 +31,54 @@ public:
         : node_(node), sequence_active_(false), last_mode_(0), current_step_(0)
     {
         arm_ = std::make_shared<MoveGroupInterface>(node_, "arm");
-        arm_->setMaxVelocityScalingFactor(0.1);
-        arm_->setMaxAccelerationScalingFactor(0.1);
+        arm_->setMaxVelocityScalingFactor(0.4);
+        arm_->setMaxAccelerationScalingFactor(0.4);
         gripper_ = std::make_shared<MoveGroupInterface>(node_, "gripper");
 
         // 创建发布者
-        process_pub_ = node_->create_publisher<std_msgs::msg::Int8>("arm_ctrl_process", 10);
+        process_pub_ = node_->create_publisher<std_msgs::msg::Int32>("arm_ctrl_process", 10);
 
-        // 动作1: 放在左边 (mode=1)
-        left_place_sequence_ = {
-            {GRIPPER_OPEN, {}},   // 1. 打开夹爪
-            {JOINT, {1.484, 1.361, -0.523, 1.484, 1.570, 0.610}},  // 2. 预放置点
-            {JOINT, {1.029, 1.361, -0.559, 1.170, 1.257, 0.576}},  // 3. 放置点
-            {GRIPPER_CLOSE, {}},  // 4. 关闭夹爪（抓住物体）
-            {JOINT, {1.030, 1.134, -0.646, 1.274, 1.134, 0.872}},  // 5. 抬升
+        // ==================== 定义动作序列 ====================
+        // 注意：请根据实际机械臂关节角度和工艺需求修改这些数值
+
+        // 动作1: 右在左边 (mode=1)
+        right_place_sequence_ = {
+            {GRIPPER_CLOSE, {}},   // 1. 关闭夹爪
+            {JOINT, {1.047, 1.152, -0.785, 1.361, 1.065, 1.169}},  // 2. 预放置点
+            {JOINT, {1.030, 1.292, -0.646, 1.204, 1.134, 0.838}},  // 3. 放置点
+            {GRIPPER_OPEN, {}},  // 4. 打开夹爪（抓住物体）
+            {JOINT, {1.047, 1.152, -0.785, 1.361, 1.065, 1.169}},  // 5. 抬升
             {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}                // 6. 返回原点
         };
 
-        // 动作2: 从左边拿起 (mode=2)
+        // 动作2: 从右边拿起 (mode=2)
+        right_pick_sequence_ = {
+            {GRIPPER_OPEN, {}},   // 1. 打开夹爪
+            {JOINT, {1.571, 1.379, -0.559, 1.533, 1.533, 0.785}},  // 2. 预抓取点
+            {JOINT, {1.030, 1.414, -0.593, 1.134, 1.204, 0.681}},  // 3. 抓取点
+            {GRIPPER_CLOSE, {}},  // 4. 关闭夹爪（抓起物体）
+            {JOINT, {1.047, 1.152, -0.785, 1.361, 1.065, 1.169}},  // 5. 抬升
+            {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}                // 6. 返回原点
+        };
+
+        // 动作3: 放在左边 (mode=3)
+        left_place_sequence_ = {
+            {GRIPPER_CLOSE, {}},   // 1. 关闭夹爪
+            {JOINT, {-1.239, 0.873, -0.506, -1.030, 0.698, -0.925}},  // 2. 预放置点
+            {JOINT, {-1.239, 1.117, -0.332, -0.733, 0.960, -0.489}},  // 3. 放置点
+            {GRIPPER_OPEN, {}},  // 4. 打开夹爪（抓住物体）
+            {JOINT, {-1.239, 0.873, -0.506, -1.030, 0.698, -0.925}},  // 5. 抬升
+            {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}                // 6. 返回原点
+        };
+
+        // 动作4: 从左边拿起 (mode=4)
         left_pick_sequence_ = {
             {GRIPPER_OPEN, {}},   // 1. 打开夹爪
-            {JOINT, {1.274, 1.309, -0.576, 1.344, 1.344, 0.838}},  // 2. 预抓取点
-            {JOINT, {1.047, 1.344, -0.646, 1.187, 1.169, 0.803}},  // 3. 抓取点
-            {GRIPPER_CLOSE, {}},  // 4. 关闭夹爪（抓起物体）
-            {JOINT, {1.047, 1.135, -0.873, 1.414, 1.047, 1.292}},  // 5. 抬升
+            {JOINT, {-1.990, 0.855, 0.000, -1.361, 1.414, -0.698}},  // 2. 预放置点
+            {JOINT, {-1.187, 1.239, -0.384, -0.646, 0.995, -0.401}},  // 3. 放置点
+            {GRIPPER_CLOSE, {}},  // 4. 关闭夹爪（抓住物体）
+            {JOINT, {-1.204, 0.925, -0.559, -0.995, 0.646, -0.908}},  // 5. 抬升
             {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}                // 6. 返回原点
-        };
-
-        // 动作3: 放在右边 (mode=3)
-        right_place_sequence_ = {
-            {GRIPPER_OPEN, {}},
-            {JOINT, {1.484, 1.361, -0.523, 1.484, 1.570, 0.610}},
-            {JOINT, {1.029, 1.361, -0.559, 1.170, 1.257, 0.576}},
-            {GRIPPER_CLOSE, {}},
-            {JOINT, {1.030, 1.134, -0.646, 1.274, 1.134, 0.872}},
-            {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}
-        };
-
-        // 动作4: 从右边拿起 (mode=4)
-        right_pick_sequence_ = {
-            {GRIPPER_OPEN, {}},
-            {JOINT, {1.484, 1.361, -0.523, 1.484, 1.570, 0.610}},
-            {JOINT, {1.029, 1.361, -0.559, 1.170, 1.257, 0.576}},
-            {GRIPPER_CLOSE, {}},
-            {JOINT, {1.030, 1.134, -0.646, 1.274, 1.134, 0.872}},
-            {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}
         };
         // ====================================================
 
@@ -107,7 +110,11 @@ public:
             return false;
         }
         arm_->setStartStateToCurrentState();
-        arm_->setJointValueTarget(joints);
+        if (!arm_->setJointValueTarget(joints)) 
+        {
+            RCLCPP_ERROR(node_->get_logger(), "关节角度超出限位，无法设置目标");
+            return false;
+        }
         return PlanAndExecute(arm_);
     }
 
@@ -170,8 +177,16 @@ private:
         MoveGroupInterface::Plan plan;
         if (interface->plan(plan) == moveit::core::MoveItErrorCode::SUCCESS)
         {
-            interface->execute(plan);
-            return true;
+            moveit::core::MoveItErrorCode exec_result = interface->execute(plan);
+            if (exec_result == moveit::core::MoveItErrorCode::SUCCESS)
+            {
+                return true;
+            } 
+            else 
+            {
+                RCLCPP_ERROR(node_->get_logger(), "运动执行失败！错误码: %d", exec_result.val);
+                return false;
+            }
         }
         else
         {
@@ -202,7 +217,7 @@ private:
 
     void PublishProcessStatus(int status)
     {
-        std_msgs::msg::Int8 msg;
+        std_msgs::msg::Int32 msg;
         msg.data = status;
         process_pub_->publish(msg);
         RCLCPP_DEBUG(node_->get_logger(), "发布 arm_ctrl_process: %d", status);
@@ -218,7 +233,8 @@ private:
         const Step& step = current_sequence_[current_step_];
         PublishProcessStatus(current_step_ + 1);  // 步骤编号从1开始
 
-        switch (step.type) {
+        switch (step.type) 
+        {
             case JOINT:
                 RCLCPP_INFO(node_->get_logger(), "执行关节运动步骤 %d/%zu", current_step_+1, current_sequence_.size());
                 return GoToJointTarget(step.joint_angles);
@@ -242,18 +258,7 @@ private:
         if (!success)
         {
             RCLCPP_ERROR(node_->get_logger(), "步骤 %d 执行失败，序列终止", current_step_);
-            // 尝试复位
-            bool reset_success = GoToJointTarget({0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
-            if (reset_success)
-            {
-                RCLCPP_INFO(node_->get_logger(), "复位成功，序列终止");
-                PublishProcessStatus(-1);  // 复位成功
-            }
-            else
-            {
-                RCLCPP_ERROR(node_->get_logger(), "复位规划失败，请检查机械臂状态");
-                PublishProcessStatus(-2);  // 复位失败
-            }
+            PublishProcessStatus(-1);
             sequence_active_ = false;
             current_step_ = 0;
             current_sequence_.clear();
@@ -263,7 +268,7 @@ private:
         current_step_++;
         if (current_step_ >= static_cast<int>(current_sequence_.size()))
         {
-            RCLCPP_INFO(node_->get_logger(), "-------------------------------状态机序列执行完成-------------------------------");
+            RCLCPP_INFO(node_->get_logger(), "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!状态机序列执行完成!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             PublishProcessStatus(0);
             sequence_active_ = false;
             current_step_ = 0;
@@ -279,7 +284,7 @@ private:
     void JointStateCallback(const JointState::SharedPtr msg)
     {
         int mode = msg->arm_ctrl_mode;
-
+        mode =3;
         if (mode == 0)
         {
             if (sequence_active_)
@@ -293,20 +298,20 @@ private:
             switch (mode)
             {
             case 1:
-                selected_sequence = left_place_sequence_;
-                RCLCPP_INFO(node_->get_logger(), "启动动作序列: 放在左边 (mode=1)");
+                selected_sequence = right_place_sequence_;
+                RCLCPP_INFO(node_->get_logger(), "启动动作序列: 放在右边 (mode=1)");
                 break;
             case 2:
-                selected_sequence = left_pick_sequence_;
-                RCLCPP_INFO(node_->get_logger(), "启动动作序列: 从左边拿起 (mode=2)");
+                selected_sequence = right_pick_sequence_;
+                RCLCPP_INFO(node_->get_logger(), "启动动作序列: 从右边拿起 (mode=2)");
                 break;
             case 3:
-                selected_sequence = right_place_sequence_;
-                RCLCPP_INFO(node_->get_logger(), "启动动作序列: 放在右边 (mode=3)");
+                selected_sequence = left_place_sequence_;
+                RCLCPP_INFO(node_->get_logger(), "启动动作序列: 放在左边 (mode=3)");
                 break;
             case 4:
-                selected_sequence = right_pick_sequence_;
-                RCLCPP_INFO(node_->get_logger(), "启动动作序列: 从右边拿起 (mode=4)");
+                selected_sequence = left_pick_sequence_;
+                RCLCPP_INFO(node_->get_logger(), "启动动作序列: 从左边拿起 (mode=4)");
                 break;
             default:
                 RCLCPP_ERROR(node_->get_logger(), "未知的mode: %d", mode);
@@ -339,7 +344,7 @@ private:
     rclcpp::Subscription<FloatArray>::SharedPtr joint_cmd_sub_;
     rclcpp::Subscription<PoseCmd>::SharedPtr pose_cmd_sub_;
     rclcpp::Subscription<JointState>::SharedPtr joint_state_sub_;
-    rclcpp::Publisher<std_msgs::msg::Int8>::SharedPtr process_pub_;
+    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr process_pub_;
 
     // 状态机变量
     bool sequence_active_;
@@ -348,10 +353,10 @@ private:
     std::vector<Step> current_sequence_;
 
     // 预定义的四个动作序列（每个序列包含多个Step）
-    std::vector<Step> left_place_sequence_;   // mode=1
-    std::vector<Step> left_pick_sequence_;    // mode=2
-    std::vector<Step> right_place_sequence_;  // mode=3
-    std::vector<Step> right_pick_sequence_;   // mode=4
+    std::vector<Step> right_place_sequence_;   // mode=1
+    std::vector<Step> right_pick_sequence_;    // mode=2
+    std::vector<Step> left_place_sequence_;  // mode=3
+    std::vector<Step> left_pick_sequence_;   // mode=4
 };
 
 int main(int argc, char **argv)
