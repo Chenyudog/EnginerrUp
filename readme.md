@@ -100,19 +100,7 @@ sudo apt install ros-humble-moveit-*
 8.sudo apt install libeigen3-dev
 9.sudo apt install -y nlohmann-json3-dev
 
-10.git clone https://github.com/libuvc/libuvc.git
-11.cd libuvc
-12.mkdir build && cd build
-13.cmake .. && make -j4
-14.sudo make install
-15.sudo ldconfig # Refreshing the link library
-#二、创建工作空间
-16.mkdir ~/工作空间/src
-17.提取文件    并放在src目录下(替换掉源代码的ros2_astra_camera功能包) 
-git clone https://github.com/Chenyudog/ros2_astra_camera
-18.cd ~/工作空间/src/ros2_astra_camera/astra_camera/scripts
-19.sudo bash install.sh
-20.sudo udevadm control --reload-rules && sudo udevadm trigger
+cd/Enginerr/src/rm_visual
 git clone https://github.com/libuvc/libuvc.git
 cd libuvc
 mkdir build && cd build
@@ -120,14 +108,19 @@ cmake .. && make -j4
 sudo make install
 sudo ldconfig # Refreshing the link library
 
+cd/Enginerr/src/rm_visual
+git clone https://github.com/Chenyudog/ros2_astra_camera
+cd ~/工作空间/src/ros2_astra_camera/astra_camera/scripts
+sudo bash install.sh
+sudo udevadm control --reload-rules && sudo udevadm trigger
+
 编译：
-21.cd ~/ros2_ws
-22.source /opt/ros/humble/setup.bash 
-23.colcon build --event-handlers  console_direct+  --cmake-args  -DCMAKE_BUILD_TYPE=Release
-24.驱动：(根据自己相机打开对应的launch 文件)
-25.source /opt/ros/humble/setup.bash 
-26.source ./install/setup.bash 
-27.ros2 launch astra_camera astra.launch.xml
+cd ~/ros2_ws
+source /opt/ros/humble/setup.bash 
+colcon build 
+source /opt/ros/humble/setup.bash 
+source ./install/setup.bash 
+ros2 launch astra_camera astra.launch.xml
 
 
 

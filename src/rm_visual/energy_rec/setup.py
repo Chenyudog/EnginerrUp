@@ -1,4 +1,6 @@
+from glob import glob
 from setuptools import find_packages, setup
+import os
 
 package_name = 'energy_rec'
 
@@ -10,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        # 添加下面这一行：将 energy_rec 目录下的所有 .pt 文件安装到 share/energy_rec/
+        (os.path.join('share', package_name), glob('energy_rec/*.pt')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
