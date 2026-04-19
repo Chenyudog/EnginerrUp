@@ -12,3 +12,4 @@ float64 joint5_velocity
 float64 joint6_velocity
 int8 gripper_state
 int8 auto_state
+int8 arm_ctrl_mode

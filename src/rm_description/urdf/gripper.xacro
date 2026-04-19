@@ -1,94 +1,72 @@
-<?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 夹爪宏定义 -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="gripper_part">
+  
+  <xacro:macro name="gripper_macro">
+    <link name="link_gripper_up">
+      <inertial>
+        <origin xyz="0.0083932168000731 -0.0010841758069529 -0.0718783541077461" rpy="0 0 0" />
+        <mass value="0.0740919747276391" />
+        <inertia ixx="1.65736896989218E-05" ixy="-1.13479059082368E-08" ixz="1.84490869096458E-06"
+                 iyy="3.67103204844643E-05" iyz="4.75930254646595E-08" izz="2.74771531788551E-05" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://rm_description/meshes/link_gripper_up.STL" />
+        </geometry>
+        <material name="">
+          <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://rm_description/meshes/link_gripper_up.STL" />
+        </geometry>
+      </collision>
+    </link>
 
-  <!-- 夹爪基座 -->
-  <link name="gripper_base_link">
-    <inertial>
-      <origin xyz="7.2736E-05 2.8921E-05 0.041036" rpy="0 0 0" />
-      <mass value="0.10913" />
-      <inertia ixx="2.7236E-05" ixy="6.6965E-10" ixz="-2.4035E-08" iyy="0.00021318" iyz="-4.3193E-09" izz="0.0002363" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://rm_description/meshes/gripper_base_link.STL" />
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://rm_description/meshes/gripper_base_link.STL" />
-      </geometry>
-    </collision>
-  </link>
+    <joint name="joint_gripper_up" type="prismatic">
+      <origin xyz="0 0 0.101" rpy="3.14159265358979 1.5707963267949 0" />
+      <parent link="link_6" />
+      <child link="link_gripper_up" />
+      <axis xyz="0 0 -1" />
+      <limit lower="-0.03" upper="0" effort="2.5" velocity="2" />
+    </joint>
 
-  <!-- 左手指 -->
-  <link name="link_gripper_left">
-    <inertial>
-      <origin xyz="-0.024393 0.0010842 -0.071878" rpy="0 0 0" />
-      <mass value="0.074092" />
-      <inertia ixx="1.6574E-05" ixy="-1.1348E-08" ixz="-1.8449E-06" iyy="3.671E-05" iyz="-4.7593E-08" izz="2.7477E-05" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://rm_description/meshes/link_gripper_left.STL" />
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://rm_description/meshes/link_gripper_left.STL" />
-      </geometry>
-    </collision>
-  </link>
+    <link name="link_gripper_down">
+      <inertial>
+        <origin xyz="0.00745363380751052 0.0010841758069837 0.0718783541077476" rpy="0 0 0" />
+        <mass value="0.0740919747276391" />
+        <inertia ixx="1.65736896989218E-05" ixy="1.13479059083673E-08" ixz="-1.84490869096458E-06"
+                 iyy="3.67103204844644E-05" iyz="4.75930254646657E-08" izz="2.74771531788552E-05" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://rm_description/meshes/link_gripper_down.STL" />
+        </geometry>
+        <material name="">
+          <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://rm_description/meshes/link_gripper_down.STL" />
+        </geometry>
+      </collision>
+    </link>
 
-  <joint name="joint_gripper_left" type="prismatic">
-    <origin xyz="0 0 0.114" rpy="3.1416 -1.5708 0" />
-    <parent link="gripper_base_link" />
-    <child link="link_gripper_left" />
-    <axis xyz="0.078458 0 -0.99692" />
-    <limit lower="-0.03" upper="0.03" effort="0" velocity="0" />
-  </joint>
-
-  <!-- 右手指 -->
-  <link name="link_gripper_right">
-    <inertial>
-      <origin xyz="-0.023454 -0.0010842 0.071878" rpy="0 0 0" />
-      <mass value="0.074092" />
-      <inertia ixx="1.6574E-05" ixy="1.1348E-08" ixz="1.8449E-06" iyy="3.671E-05" iyz="-4.7593E-08" izz="2.7477E-05" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://rm_description/meshes/link_gripper_right.STL" />
-      </geometry>
-      <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://rm_description/meshes/link_gripper_right.STL" />
-      </geometry>
-    </collision>
-  </link>
-
-  <joint name="joint_gripper_right" type="prismatic">
-    <origin xyz="0 0 0.114" rpy="3.1416 -1.5708 0" />
-    <parent link="gripper_base_link" />
-    <child link="link_gripper_right" />
-    <axis xyz="0.078458 0 0.99692" />
-    <limit lower="-0.03" upper="0.03" effort="0" velocity="0" />
-    <mimic joint="joint_gripper_left" />
-    <multiplier value="-1.0" />
-  </joint>
-
+    <joint name="joint_gripper_down" type="prismatic">
+      <origin xyz="0 0 0.101" rpy="3.14159265358979 1.5707963267949 0" />
+      <parent link="link_6" />
+      <child link="link_gripper_down" />
+      <axis xyz="0 0 -1" />
+      <limit lower="-0.03" upper="0.03" effort="2.5" velocity="2" />
+      <mimic joint="joint_gripper_up" multiplier="-1.0" />
+    </joint>
+  </xacro:macro>
+  
 </robot>

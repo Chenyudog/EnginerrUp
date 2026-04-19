@@ -12,6 +12,7 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rmctrl_msgs REQUIRED)
 
+
 include_directories(include)
 
 add_executable(test_control src/test_control.cpp)
@@ -34,6 +35,7 @@ ament_target_dependencies(${PROJECT_NAME}
   hardware_interface 
   pluginlib 
   rmctrl_msgs 
+
 )
 
 

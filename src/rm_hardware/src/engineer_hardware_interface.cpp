@@ -129,9 +129,6 @@ hardware_interface::return_type ArmHardwareInterface::read
     hw_states_position6_ = joint_pos[5];
 
     hw_states_gripper_ = dm_driver_->getGripperState();
-        RCLCPP_INFO(dm_driver_->get_logger(), 
-        "%lf)",
-      hw_states_gripper_);
 
     return hardware_interface::return_type::OK;
 }
@@ -154,11 +151,11 @@ hardware_interface::return_type ArmHardwareInterface::write
     
     if(hw_commands_gripper_ > -0.015)//double向int的转换，防止0.9999999变成0
     {
-        gripper_ctrl = 1;
+        gripper_ctrl = 0;
     }
     else
     {
-        gripper_ctrl = 0;
+        gripper_ctrl = 1;
     }
     dm_driver_->setTargetPositionRadian(joint_pos_ctrl,gripper_ctrl);
     return hardware_interface::return_type::OK;
@@ -169,25 +166,25 @@ std::vector<hardware_interface::StateInterface> ArmHardwareInterface::export_sta
     std::vector<hardware_interface::StateInterface> state_interfaces;
 
     state_interfaces.emplace_back(
-        hardware_interface::StateInterface("Joint_1", "position", &hw_states_position1_));
+        hardware_interface::StateInterface("joint_1", "position", &hw_states_position1_));
 
     state_interfaces.emplace_back(
-        hardware_interface::StateInterface("Joint_2", "position", &hw_states_position2_));
+        hardware_interface::StateInterface("joint_2", "position", &hw_states_position2_));
 
     state_interfaces.emplace_back(
-        hardware_interface::StateInterface("Joint_3", "position", &hw_states_position3_));
+        hardware_interface::StateInterface("joint_3", "position", &hw_states_position3_));
 
     state_interfaces.emplace_back(
-        hardware_interface::StateInterface("Joint_4", "position", &hw_states_position4_));
+        hardware_interface::StateInterface("joint_4", "position", &hw_states_position4_));
 
     state_interfaces.emplace_back(
-        hardware_interface::StateInterface("Joint_5", "position", &hw_states_position5_));
+        hardware_interface::StateInterface("joint_5", "position", &hw_states_position5_));
 
     state_interfaces.emplace_back(
-        hardware_interface::StateInterface("Joint_6", "position", &hw_states_position6_));
+        hardware_interface::StateInterface("joint_6", "position", &hw_states_position6_));
     
     state_interfaces.emplace_back(
-        hardware_interface::StateInterface("joint_gripper_left", "position", &hw_states_gripper_));
+        hardware_interface::StateInterface("joint_gripper_up", "position", &hw_states_gripper_));
 
     return state_interfaces;
 }
@@ -197,25 +194,25 @@ std::vector<hardware_interface::CommandInterface> ArmHardwareInterface::export_c
 {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
     command_interfaces.emplace_back(
-        hardware_interface::CommandInterface("Joint_1", "position", &hw_commands_position1_));
+        hardware_interface::CommandInterface("joint_1", "position", &hw_commands_position1_));
                                             
     command_interfaces.emplace_back(
-        hardware_interface::CommandInterface("Joint_2", "position", &hw_commands_position2_));
+        hardware_interface::CommandInterface("joint_2", "position", &hw_commands_position2_));
     
     command_interfaces.emplace_back(
-        hardware_interface::CommandInterface("Joint_3", "position", &hw_commands_position3_));
+        hardware_interface::CommandInterface("joint_3", "position", &hw_commands_position3_));
                                             
     command_interfaces.emplace_back(
-        hardware_interface::CommandInterface("Joint_4", "position", &hw_commands_position4_));
+        hardware_interface::CommandInterface("joint_4", "position", &hw_commands_position4_));
 
     command_interfaces.emplace_back(
-        hardware_interface::CommandInterface("Joint_5", "position", &hw_commands_position5_));
+        hardware_interface::CommandInterface("joint_5", "position", &hw_commands_position5_));
                                            
     command_interfaces.emplace_back(
-        hardware_interface::CommandInterface("Joint_6", "position", &hw_commands_position6_));
+        hardware_interface::CommandInterface("joint_6", "position", &hw_commands_position6_));
     
     command_interfaces.emplace_back(
-        hardware_interface::CommandInterface("joint_gripper_left", "position", &hw_commands_gripper_));
+        hardware_interface::CommandInterface("joint_gripper_up", "position", &hw_commands_gripper_));
     return command_interfaces;
 }
 

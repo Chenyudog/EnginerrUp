@@ -136,6 +136,7 @@ class RobotAPI(Node):
         joint_cmd_sub_from_moveit2_list.append(msg.joint6_position)
         joint_cmd_sub_from_moveit2_list.append(msg.gripper_ctrl)
         joint_cmd_sub_from_moveit2_list.append(msg.auto_state)
+        joint_cmd_sub_from_moveit2_list.append(msg.arm_ctrl_process_state)
 
 
         self.robot_serial.send_data("joint_cmd_from_moveit2", joint_cmd_sub_from_moveit2_list)

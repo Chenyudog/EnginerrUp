@@ -6,3 +6,4 @@ float64 joint5_position
 float64 joint6_position
 int8 gripper_ctrl#根据hardware的通信接口，所以全部传入float64也就是double
 int8 auto_state
+int8 arm_ctrl_process_state

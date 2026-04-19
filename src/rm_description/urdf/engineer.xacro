@@ -1,17 +1,14 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <robot name="engineer" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-
+  
   <xacro:include filename="$(find rm_description)/urdf/arm.xacro" />
   <xacro:include filename="$(find rm_description)/urdf/gripper.xacro" />
   <xacro:include filename="$(find rm_description)/urdf/engineer.ros2_control.xacro" />
-
-
-  <joint name="joint_gripper_attach" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 1.57" />
-    <parent link="link_6" />
-    <child link="gripper_base_link" />
-  </joint>
-
-  <xacro:engineer_ros2_control name="EngineerRobot" initial_positions_file="$(find rm_description)/config/initial_positions.yaml" />
+  
+  <xacro:arm_macro />
+  <xacro:gripper_macro />
+  
+  <xacro:engineer_ros2_control 
+      name="engineer" 
+      initial_positions_file="$(find engineer_moveit2)/config/initial_positions.yaml" />
 </robot>

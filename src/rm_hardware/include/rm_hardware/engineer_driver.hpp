@@ -17,7 +17,7 @@ public:
     // 构造函数：调用父类（rclcpp::Node）的构造函数，初始化节点
     DMDriver(const std::string &node_name = "dm_driver_node") 
         : rclcpp::Node(node_name, rclcpp::NodeOptions().use_global_arguments(true)), // 继承节点的构造
-          stop_sub_(false), auto_state_mcu_(0), auto_state_nuc_(0), gripper_state_(0)
+          stop_sub_(false), auto_state_mcu_(0), auto_state_nuc_(0), gripper_state_(0),arm_ctrl_mode_(0),arm_ctrl_process_state_(0)
     {
         // 初始化关节数据数组
         for (int i = 0; i < JOINT_NUM; i++) 
@@ -44,7 +44,7 @@ public:
                 std::lock_guard<std::mutex> lock(joint_mutex_);
             //在此次修正接收数据的电机转向，注意是接收
                 joint_positions_[0] = -msg->joint1_position;
-                joint_positions_[1] = msg->joint2_position;
+                joint_positions_[1] = -msg->joint2_position;
                 joint_positions_[2] = -msg->joint3_position;//与下位机相反
                 joint_positions_[3] = -msg->joint4_position;
                 joint_positions_[4] = msg->joint5_position;
@@ -58,9 +58,9 @@ public:
                 joint_velocities_[5] = msg->joint6_velocity;
                 
                 //硬件规范写了必须是double类型，而且传回的是位置，这里用状态替代
-                gripper_state_ = (msg->gripper_state < 0.5) ? -0.03 : 0.0;
+                gripper_state_ = (msg->gripper_state > 0.5) ? -0.03 : 0.0;
                 auto_state_mcu_ = msg->auto_state;
-
+                arm_ctrl_mode_ = msg->arm_ctrl_mode;
                 // RCLCPP_INFO(this->get_logger(), "回调正常触发");
             });
 
@@ -141,13 +141,14 @@ public:
         rmctrl_msgs::msg::ArmCtrlData msg;
         //在此次修正发送命令的电机转向，注意发送
         msg.joint1_position = joint_position_cmd_array[0];
-        msg.joint2_position = joint_position_cmd_array[1];
+        msg.joint2_position = -joint_position_cmd_array[1];
         msg.joint3_position = -joint_position_cmd_array[2];//与下位机相反
         msg.joint4_position = joint_position_cmd_array[3];
         msg.joint5_position = joint_position_cmd_array[4];
         msg.joint6_position = -joint_position_cmd_array[5];
         msg.gripper_ctrl = gripper_ctrl;
         msg.auto_state = 1;
+        msg.arm_ctrl_process_state = arm_ctrl_process_state_;
 
         pub_moveit2_arm_cmd_to_nuc_->publish(msg);
     }
@@ -186,7 +187,9 @@ private:
     rclcpp::Subscription<rmctrl_msgs::msg::ArmStateData>::SharedPtr sub_arm_state_;
     int8_t auto_state_mcu_;       
     int8_t auto_state_nuc_;       
-    double gripper_state_;        
+    double gripper_state_;   
+    int8_t arm_ctrl_mode_;
+    int8_t arm_ctrl_process_state_;         
     double joint_positions_[JOINT_NUM];  
     double joint_velocities_[JOINT_NUM]; 
     std::mutex joint_mutex_;      

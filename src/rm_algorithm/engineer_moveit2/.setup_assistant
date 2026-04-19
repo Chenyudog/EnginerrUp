@@ -5,9 +5,9 @@ moveit_setup_assistant_config:
   srdf:
     relative_path: config/engineer.srdf
   package_settings:
-    author_name: q@qq.com
-    author_email: q@qq.com
-    generated_timestamp: 1775634607
+    author_name: RockZhang
+    author_email: 2431952330@qq.com
+    generated_timestamp: 1776505997
   control_xacro:
     command:
       - position

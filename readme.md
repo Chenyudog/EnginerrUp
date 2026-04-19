@@ -84,6 +84,7 @@ sudo apt install ros-humble-moveit-*
 
 ##如何继续部署到工程车上:
 1、修改engineer_moveit2.launch.xml上的包名，文件名等
+2、将movie2助手生成的包从头到尾移到自己创的功能包里面，比如bringup功能包里面的config文件夹
 
 
 
@@ -123,7 +124,12 @@ sudo ldconfig # Refreshing the link library
 21.cd ~/ros2_ws
 22.source /opt/ros/humble/setup.bash 
 23.colcon build --event-handlers  console_direct+  --cmake-args  -DCMAKE_BUILD_TYPE=Release
-24.驱动：(根据自己相机打开对应的launch 文件）
+24.驱动：(根据自己相机打开对应的launch 文件)
 25.source /opt/ros/humble/setup.bash 
 26.source ./install/setup.bash 
 27.ros2 launch astra_camera astra.launch.xml
+
+
+
+疑问:
+1、video的urdf有ros2_control,还有为什么不可以去掉<xacro:gripper_macro />

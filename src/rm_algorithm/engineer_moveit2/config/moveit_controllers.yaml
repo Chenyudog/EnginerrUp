@@ -10,17 +10,18 @@ moveit_simple_controller_manager:
   arm_controller:
     type: FollowJointTrajectory
     joints:
-      - Joint_1
-      - Joint_2
-      - Joint_3
-      - Joint_4
-      - Joint_5
-      - Joint_6
+      - joint_1
+      - joint_2
+      - joint_3
+      - joint_4
+      - joint_5
+      - joint_6
     action_ns: follow_joint_trajectory
     default: true
+    
   gripper_controller:
     type: FollowJointTrajectory
     joints:
-      - joint_gripper_left
+      - joint_gripper_up
     action_ns: follow_joint_trajectory
     default: true

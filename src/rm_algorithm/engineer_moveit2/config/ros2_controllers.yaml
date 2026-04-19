@@ -17,12 +17,12 @@ controller_manager:
 arm_controller:
   ros__parameters:
     joints:
-      - Joint_1
-      - Joint_2
-      - Joint_3
-      - Joint_4
-      - Joint_5
-      - Joint_6
+      - joint_1
+      - joint_2
+      - joint_3
+      - joint_4
+      - joint_5
+      - joint_6
     command_interfaces:
       - position
     state_interfaces:
@@ -30,7 +30,7 @@ arm_controller:
 gripper_controller:
   ros__parameters:
     joints:
-      - joint_gripper_left
+      - joint_gripper_up
     command_interfaces:
       - position
     state_interfaces:

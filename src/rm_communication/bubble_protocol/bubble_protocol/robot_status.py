@@ -193,6 +193,7 @@ class RobotStatus():
             joint_state_sub_from_mcu_msg.joint6_velocity = float(self.status["joint_state_sub_from_mcu"]["joint6_velocity"][IDX_VAL])
             joint_state_sub_from_mcu_msg.gripper_state = int(self.status["joint_state_sub_from_mcu"]["gripper_state"][IDX_VAL]) #通过这个状态控制自动抓取功能的开关
             joint_state_sub_from_mcu_msg.auto_state = int(self.status["joint_state_sub_from_mcu"]["auto_state"][IDX_VAL])
+            joint_state_sub_from_mcu_msg.arm_ctrl_mode = int(self.status["joint_state_sub_from_mcu"]["arm_ctrl_mode"][IDX_VAL])
             self.joint_state_sub_from_mcu_pub.publish(joint_state_sub_from_mcu_msg)
 
         # real-time publisher api
