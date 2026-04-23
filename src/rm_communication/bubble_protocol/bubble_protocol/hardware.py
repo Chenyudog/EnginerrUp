@@ -84,6 +84,7 @@ class RobotSerial(serial.Serial):
         data: `bytearray`
             The data stream to be send
         '''
+        print(f"[SERIAL WRITE] {data.hex()}")
         self.write(data)
         self.tx_count += 1
 

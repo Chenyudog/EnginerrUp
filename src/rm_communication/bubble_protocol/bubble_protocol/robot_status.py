@@ -197,20 +197,14 @@ class RobotStatus():
             self.joint_state_sub_from_mcu_pub.publish(joint_state_sub_from_mcu_msg)
 
 
-        def voice_control_callback():
-            voice_control_msg = VoiceControl()
-            voice_control_msg.speed_vx = float(self.status["voice_control"]["speed_vx"][IDX_VAL])
-            voice_control_msg.speed_vy = float(self.status["voice_control"]["speed_vy"][IDX_VAL])
-            voice_control_msg.speed_vw = float(self.status["voice_control"]["speed_vw"][IDX_VAL])
-            self.voice_control_pub.publish(voice_control_msg)
+
             
         # real-time publisher api
         if self.name == "engineer":###定义NUC现在是那个机器人在用###
             ###在此处添加需要发布出去给大家的MCU话题数据###
             self.joint_state_sub_from_mcu_pub = self.node.create_publisher(
                 ArmStateData,'/joint_state_sub_from_mcu', 10)
-            self.voice_control_pub = self.node.create_publisher(
-                VoiceControl, '/voice_control', 10)
+
 
             ###在此处添加机器人需要从MCU接收的话题数据###
             self.realtime_callback["joint_state_sub_from_mcu"] = joints_status_from_mcu_callback

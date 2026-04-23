@@ -126,4 +126,12 @@ sudo ldconfig # Refreshing the link library
 24.驱动：(根据自己相机打开对应的launch 文件）
 25.source /opt/ros/humble/setup.bash 
 26.source ./install/setup.bash 
-27.ros2 launch astra_camera astra.launch.xml
+27.ros2 launch astra_camera astra.launch.xml\
+
+
+
+## 配置语音系统环境
+pip3 install sounddevice
+sudo apt update
+sudo apt install portaudio19-dev
+pip3 install git+https://github.com/aliyun/alibabacloud-nls-python-sdk.git
