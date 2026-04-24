@@ -7,7 +7,7 @@ import wave
 import subprocess
 
 URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-TOKEN = "693aa450233145a1961d42a888397a57"
+TOKEN = "abe14d35c3644064bd69c5ea217484e0"
 APPKEY = "zvNV8ngJlGovddWG"
 
 TEXT = '大壮正想去摘取花瓣，谁知阿丽和阿强突然内讧，阿丽拿去手枪向树干边的阿强射击，两声枪响，阿强直接倒入水中'

@@ -2,7 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from geometry_msgs.msg import Twist  # 小海龟要用的消息
+from geometry_msgs.msg import Twist  # 这里修好了！
 from rmctrl_msgs.msg import VoiceControl
 
 import sys
@@ -34,8 +34,11 @@ class VoiceControlNode(Node):
 
         # 运动参数
         self.speed = 0.5
-        self.duration = 0.0
-        self.start_time = 0.0
+        
+        # ====================== 数帧专用变量 ======================
+        self.need_ticks = 0   # 需要跑多少帧
+        self.run_ticks = 0    # 已经跑了多少帧
+        self.TICK_RATE = 0.05 # 定时器周期 50ms
 
         # 订阅语音识别
         self.subscription = self.create_subscription(
@@ -45,18 +48,15 @@ class VoiceControlNode(Node):
             10
         )
 
-        # ====================== 发布器 ======================
-        # 1. 发布底盘控制
+        # 发布器
         self.publisher_chassis = self.create_publisher(VoiceControl, '/chassis_speed', 10)
-        # 2. 发布小海龟控制 (新增！)
         self.publisher_turtle = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
-        # 3. 反馈
         self.feedback_publisher = self.create_publisher(String, '/voice_feedback', 10)
 
         # 定时器
-        self.timer_ = self.create_timer(0.05, self.timer_callback)
+        self.timer_ = self.create_timer(self.TICK_RATE, self.timer_callback)
 
-        self.get_logger().info('✅ 语音控制启动（底盘 + 小海龟双控制）')
+        self.get_logger().info('✅ 语音控制启动（帧数精准版）')
 
     def listener_callback(self, msg):
         text = msg.data.strip()
@@ -80,18 +80,16 @@ class VoiceControlNode(Node):
             return
         else:
             self.mode = REQUIRE_MODE
-
-        if self.mode == REQUIRE_MODE:
-            self.publish_feedback("请问需要我做什么动作？")
             return
 
         if self.distance <= 0:
             self.publish_feedback("请问我应该走多远？")
             return
 
-        # 计算运动时间
-        self.duration = self.distance / self.speed
-        self.start_time = time.time()
+        # ====================== 【核心：纯数帧，不用时间】 ======================
+        total_seconds = self.distance / self.speed
+        self.need_ticks = int(total_seconds / self.TICK_RATE)
+        self.run_ticks = 0
         self.moving = True
 
         # 设置速度
@@ -116,28 +114,29 @@ class VoiceControlNode(Node):
             self.publish_feedback(f'右移 {self.distance} 米')
 
     def timer_callback(self):
-        # ============== 核心：同时控制底盘 + 小海龟 ==============
         msg_chassis = VoiceControl()
         msg_turtle = Twist()
-        
-        current_time = time.time()
 
-        if self.moving and (current_time - self.start_time < self.duration):
-            # 运动中
-            msg_chassis.vx = self.vx
-            msg_chassis.vy = self.vy
-            
-            msg_turtle.linear.x = self.vx
-            msg_turtle.linear.y = self.vy
+        # ====================== 【帧数判断】 ======================
+        if self.moving:
+            if self.run_ticks < self.need_ticks:
+                msg_chassis.vx = self.vx
+                msg_chassis.vy = self.vy
+                msg_turtle.linear.x = self.vx
+                msg_turtle.linear.y = self.vy
+                self.run_ticks += 1
+            else:
+                msg_chassis.vx = 0.0
+                msg_chassis.vy = 0.0
+                msg_turtle.linear.x = 0.0
+                msg_turtle.linear.y = 0.0
+                self.moving = False
         else:
-            # 停止
             msg_chassis.vx = 0.0
             msg_chassis.vy = 0.0
             msg_turtle.linear.x = 0.0
             msg_turtle.linear.y = 0.0
-            self.moving = False
 
-        # 发布
         self.publisher_chassis.publish(msg_chassis)
         self.publisher_turtle.publish(msg_turtle)
 
@@ -146,16 +145,8 @@ class VoiceControlNode(Node):
         self.vx = 0.0
         self.vy = 0.0
         self.moving = False
-        
-        msg = VoiceControl()
-        msg.vx = 0.0
-        msg.vy = 0.0
-        self.publisher_chassis.publish(msg)
-        
-        tmsg = Twist()
-        tmsg.linear.x = 0.0
-        tmsg.linear.y = 0.0
-        self.publisher_turtle.publish(tmsg)
+        self.need_ticks = 0
+        self.run_ticks = 0
 
     def publish_feedback(self, feedback):
         msg = String()
@@ -169,11 +160,10 @@ class VoiceControlNode(Node):
 
     def speak(self, text):
         try:
-            pcm_path = os.path.join(os.path.dirname(__file__), '../python_asr', 'temp_tts.pcm')
-            wav_path = os.path.join(os.path.dirname(__file__), '../python_asr', 'temp_tts.wav')
+            pcm_path = os.path.join(os.path.dirname(__file__), '../python_asr/temp_tt.pcm')
+            wav_path = os.path.join(os.path.dirname(__file__), '../python_asr/temp_tt.wav')
             t = TestTts("tts", pcm_path)
             t.start(text)
-            time.sleep(0.5)
             pcm2wav(pcm_path, wav_path)
             play_audio(wav_path)
             if os.path.exists(pcm_path):
