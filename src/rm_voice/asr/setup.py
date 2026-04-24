@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'engineer_info'
+package_name = 'asr'
 
 setup(
     name=package_name,
@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'engineer_info_node=engineer_info.engineer_info:main'
+            'asr_node=asr.asr:main'
         ],
     },
 )

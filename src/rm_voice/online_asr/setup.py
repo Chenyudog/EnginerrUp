@@ -14,7 +14,7 @@ setup(
         (os.path.join('share', package_name, 'launch'), ['launch/online_asr.launch.py']),
         (os.path.join('share', package_name, 'launch'), ['launch/voice_control.launch.py']),
         (os.path.join('share', package_name, 'launch'), ['launch/voice_control_with_feedback.launch.py']),
-        (os.path.join('share', package_name, 'python_asr'), glob(os.path.join('python_asr', '*'))),
+        (os.path.join('share', package_name, 'online_asr'), glob(os.path.join('online_asr', '*'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -29,8 +29,10 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'asr_node = online_asr.asr_node:main',
+            #asr节点跟
+            # 'asr_node = online_asr.asr:main',
             'voice_control_node = online_asr.voice_control_node:main',
+            # 'tts_node= online_asr.tts:main'
         ],
     },
 )

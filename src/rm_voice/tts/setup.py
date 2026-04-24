@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'engineer_info'
+package_name = 'tts'
 
 setup(
     name=package_name,
@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'engineer_info_node=engineer_info.engineer_info:main'
+            'tts_node=tts.tts:main'
         ],
     },
 )

@@ -4,12 +4,6 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist  # 这里修好了！
 from rmctrl_msgs.msg import VoiceControl
-
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../python_asr'))
-from tts import TestTts, pcm2wav, play_audio
-import time
 import re
 
 REQUIRE_MODE = 0
@@ -55,7 +49,6 @@ class VoiceControlNode(Node):
 
         # 定时器
         self.timer_ = self.create_timer(self.TICK_RATE, self.timer_callback)
-
         self.get_logger().info('✅ 语音控制启动（帧数精准版）')
 
     def listener_callback(self, msg):
@@ -113,6 +106,7 @@ class VoiceControlNode(Node):
             self.vy = -self.speed
             self.publish_feedback(f'右移 {self.distance} 米')
 
+    
     def timer_callback(self):
         msg_chassis = VoiceControl()
         msg_turtle = Twist()
@@ -153,25 +147,9 @@ class VoiceControlNode(Node):
         msg.data = feedback
         self.feedback_publisher.publish(msg)
         self.get_logger().info(f'反馈: {feedback}')
-        try:
-            self.speak(feedback)
-        except:
-            pass
+ 
 
-    def speak(self, text):
-        try:
-            pcm_path = os.path.join(os.path.dirname(__file__), '../python_asr/temp_tt.pcm')
-            wav_path = os.path.join(os.path.dirname(__file__), '../python_asr/temp_tt.wav')
-            t = TestTts("tts", pcm_path)
-            t.start(text)
-            pcm2wav(pcm_path, wav_path)
-            play_audio(wav_path)
-            if os.path.exists(pcm_path):
-                os.remove(pcm_path)
-            if os.path.exists(wav_path):
-                os.remove(wav_path)
-        except:
-            pass
+
 
     # 数字解析
     def parse_distance(self, text):
