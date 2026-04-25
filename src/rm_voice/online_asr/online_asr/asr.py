@@ -17,7 +17,7 @@ class OnlineASRNode(Node):
 
         # 阿里云配置
         self.URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-        self.TOKEN = "abe14d35c3644064bd69c5ea217484e0"
+        self.TOKEN = "3e35c5af174242259d0a8d5ccd3dabe3"
         self.APPKEY = "zvNV8ngJlGovddWG"
 
         self.publisher_ = self.create_publisher(String, "/recognized_text", 10)

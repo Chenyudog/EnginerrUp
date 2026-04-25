@@ -23,7 +23,7 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-TOKEN = "abe14d35c3644064bd69c5ea217484e0"
+TOKEN = "3e35c5af174242259d0a8d5ccd3dabe3"
 APPKEY = "zvNV8ngJlGovddWG"
 
 TEXT = '大壮正想去摘取花瓣，谁知阿丽和阿强突然内讧，阿丽拿去手枪向树干边的阿强射击，两声枪响，阿强直接倒入水中'

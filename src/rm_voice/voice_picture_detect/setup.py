@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'voice_picture_detect_node=voice_picture_detect.voice_picture_detect:main',
+            'rgb_picture_capture_node=voice_picture_detect.rgb_picture_capture:main',
         ],
     },
 )

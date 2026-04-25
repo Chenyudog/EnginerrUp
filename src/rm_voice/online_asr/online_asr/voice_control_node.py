@@ -45,7 +45,7 @@ class VoiceControlNode(Node):
         # 发布器
         self.publisher_chassis = self.create_publisher(VoiceControl, '/chassis_speed', 10)
         self.publisher_turtle = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
-        self.feedback_publisher = self.create_publisher(String, '/voice_feedback', 10)
+        self.feedback_publisher = self.create_publisher(String, '/base_control', 10)
 
         # 定时器
         self.timer_ = self.create_timer(self.TICK_RATE, self.timer_callback)

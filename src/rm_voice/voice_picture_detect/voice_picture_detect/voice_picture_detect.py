@@ -6,17 +6,21 @@ from std_msgs.msg import String
 from rclpy.node import Node
 
 local_path = "/home/ubuntu/EnginerrUp/src/rm_voice/voice_picture_detect/picture/picture.png"
+picture_dir="/home/ubuntu/EnginerrUp/src/rm_voice/voice_picture_detect/picture"
 image_path = f"file://{local_path}"
 class VoicePictureCapture(Node):
     def __init__(self):
         super().__init__("voice_picture_capture_node")
         self.publisher_=self.create_publisher(String,"picture_description",10)
-        self.callAPI()
+        # 每秒检查一次图片
+        self.timer = self.create_timer(0.3, self.callAPI)
+
+
 
     def callAPI(self):
-        if local_path is None:
+        if not os.path.exists(local_path):
             self.get_logger().info("未检测到图片 退出程序")
-            return 
+            return
         else:
             #-------------------以下为调用官方api---------------------
             self.get_logger().info("检测到图片 开始识别")
@@ -25,7 +29,7 @@ class VoicePictureCapture(Node):
             messages = [
                         {'role':'user',
                         'content': [{'image': image_path},
-                                    {'text': '请问我看到了什么?'}]}]
+                                    {'text': '用一句话概括一下 你看到了什么?'}]}]
 
             response = MultiModalConversation.call(
                 # 各地域的API Key不同。获取API Key：https://help.aliyun.com/zh/model-studio/get-api-key
@@ -40,7 +44,7 @@ class VoicePictureCapture(Node):
             msg=String()
             msg.data=result
             self.publisher_.publish(msg)
-
+            os.remove(local_path)
 
 def main():
     rclpy.init()

@@ -13,8 +13,8 @@ class FounderAnswerNode(Node):
             "/recognized_text",
             self.text_callback,
             10
-        )
-
+        )   
+        
         # 发布语音反馈 → 给 TTS 播报
         self.feedback_pub = self.create_publisher(
             String,
@@ -27,7 +27,6 @@ class FounderAnswerNode(Node):
     def text_callback(self, msg):
         text = msg.data.strip()
         self.get_logger().info(f"识别内容：{text}")
-
         # ===================== 创始人问题匹配 =====================
         if any(key in text for key in ["谁创立", "谁创造", "谁发明", "创始人", "谁做的"]):
             answer = "这辆工程车的创始人是海南大学二零二二级刘嘉俊"

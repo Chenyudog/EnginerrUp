@@ -11,7 +11,7 @@ from std_msgs.msg import String
 
 # ===================== 阿里云配置 =====================
 URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-TOKEN = "abe14d35c3644064bd69c5ea217484e0"
+TOKEN = "3e35c5af174242259d0a8d5ccd3dabe3"
 APPKEY = "zvNV8ngJlGovddWG"
 
 # ===================== 工具函数 =====================
@@ -78,11 +78,26 @@ class TTS(Node):
     def __init__(self):
         super().__init__('tts_node')
 
-        # 订阅 /voice_feedback 话题
+        # 订阅/base_control 话题
         self.subscription = self.create_subscription(
             String,
-            "/voice_feedback",
+            "/base_control",
             self.tts_callback,
+            10
+        )
+
+        self.picture_description_subscription = self.create_subscription(
+            String,
+            "/picture_description",
+            self.tts_picture_description_callback,
+            10
+        )
+
+
+        self.engineer_info_subscription = self.create_subscription(
+            String,
+            "/voice_feedback",
+            self.engineer_info_callback,
             10
         )
         self.get_logger().info("✅ TTS 语音播报节点已启动，等待消息...")
@@ -116,6 +131,63 @@ class TTS(Node):
         except Exception as e:
             self.get_logger().error(f"播放失败：{str(e)}")
 
+    def tts_picture_description_callback(self, msg):
+        text = msg.data
+        self.get_logger().info(f"📢 收到播报：{text}")
+
+        try:
+            # 临时文件路径
+            pcm_path = os.path.join(os.path.dirname(__file__), 'temp_tts.pcm')
+            wav_path = os.path.join(os.path.dirname(__file__), 'temp_tts.wav')
+
+            # 合成语音
+            t = TestTts("tts", pcm_path)
+            t.start(text)
+
+            # 等待合成
+            time.sleep(5)
+
+            # 转格式 + 播放
+            pcm2wav(pcm_path, wav_path)
+            play_audio(wav_path)
+
+            # 删除临时文件
+            if os.path.exists(pcm_path):
+                os.remove(pcm_path)
+            if os.path.exists(wav_path):
+                os.remove(wav_path)
+
+        except Exception as e:
+            self.get_logger().error(f"播放失败：{str(e)}")
+
+    def engineer_info_callback(self,msg):
+        text = msg.data
+        self.get_logger().info(f"📢 收到播报：{text}")
+
+        try:
+            # 临时文件路径
+            pcm_path = os.path.join(os.path.dirname(__file__), 'temp_tts.pcm')
+            wav_path = os.path.join(os.path.dirname(__file__), 'temp_tts.wav')
+
+            # 合成语音
+            t = TestTts("tts", pcm_path)
+            t.start(text)
+
+            # 等待合成
+            time.sleep(2)
+
+            # 转格式 + 播放
+            pcm2wav(pcm_path, wav_path)
+            play_audio(wav_path)
+
+            # 删除临时文件
+            if os.path.exists(pcm_path):
+                os.remove(pcm_path)
+            if os.path.exists(wav_path):
+                os.remove(wav_path)
+
+        except Exception as e:
+            self.get_logger().error(f"播放失败：{str(e)}")
 # ===================== 主函数 =====================
 def main(args=None):
     rclpy.init(args=args)

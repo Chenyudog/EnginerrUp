@@ -1,5 +1,15 @@
 <launch>
     <node 
-        name=""
-        pkg=
+        name="rgb_picture_capture_node"
+        pkg="voice_picture_detect"
+        exec="rgb_picture_capture_node"
+        output="screen"
+    />
+
+    <node
+        name="voice_picture_detect_node"
+        pkg="voice_picture_detect"
+        exec="voice_picture_detect_node"
+        output="screen"
+    />
 </launch>
