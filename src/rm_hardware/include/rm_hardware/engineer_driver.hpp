@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <std_msgs/msg/int32.hpp>
 #include "rmctrl_msgs/msg/arm_ctrl_data.hpp"
 #include <cstdint>
 
@@ -63,7 +64,14 @@ public:
                 arm_ctrl_mode_ = msg->arm_ctrl_mode;
                 // RCLCPP_INFO(this->get_logger(), "回调正常触发");
             });
-
+        sub_process_ = this->create_subscription<std_msgs::msg::Int32>(
+            "arm_ctrl_process", rclcpp::QoS(10),
+            [this](const std_msgs::msg::Int32::SharedPtr msg) 
+            {
+                std::lock_guard<std::mutex> lock(joint_mutex_);
+                arm_ctrl_process_state_ = static_cast<int8_t>(msg->data);
+                RCLCPP_DEBUG(this->get_logger(), "arm_ctrl_process_state 更新为 %d", arm_ctrl_process_state_);
+            });
         RCLCPP_INFO(this->get_logger(), "DMDriver 初始化完成，订阅已创建");
     }
 
@@ -185,6 +193,7 @@ private:
     bool stop_sub_ = false;
     rclcpp::Publisher<rmctrl_msgs::msg::ArmCtrlData>::SharedPtr pub_moveit2_arm_cmd_to_nuc_;
     rclcpp::Subscription<rmctrl_msgs::msg::ArmStateData>::SharedPtr sub_arm_state_;
+    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr sub_process_;
     int8_t auto_state_mcu_;       
     int8_t auto_state_nuc_;       
     double gripper_state_;   

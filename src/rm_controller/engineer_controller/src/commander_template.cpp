@@ -31,8 +31,8 @@ public:
         : node_(node), sequence_active_(false), last_mode_(0), current_step_(0)
     {
         arm_ = std::make_shared<MoveGroupInterface>(node_, "arm");
-        arm_->setMaxVelocityScalingFactor(0.4);
-        arm_->setMaxAccelerationScalingFactor(0.4);
+        arm_->setMaxVelocityScalingFactor(0.5);
+        arm_->setMaxAccelerationScalingFactor(0.5);
         gripper_ = std::make_shared<MoveGroupInterface>(node_, "gripper");
 
         // 创建发布者
@@ -41,7 +41,7 @@ public:
         // ==================== 定义动作序列 ====================
         // 注意：请根据实际机械臂关节角度和工艺需求修改这些数值
 
-        // 动作1: 右在左边 (mode=1)
+        // 动作1: 放在右边 (mode=1)
         right_place_sequence_ = {
             {GRIPPER_CLOSE, {}},   // 1. 关闭夹爪
             {JOINT, {1.047, 1.152, -0.785, 1.361, 1.065, 1.169}},  // 2. 预放置点
@@ -54,8 +54,8 @@ public:
         // 动作2: 从右边拿起 (mode=2)
         right_pick_sequence_ = {
             {GRIPPER_OPEN, {}},   // 1. 打开夹爪
-            {JOINT, {1.571, 1.379, -0.559, 1.533, 1.533, 0.785}},  // 2. 预抓取点
-            {JOINT, {1.030, 1.414, -0.593, 1.134, 1.204, 0.681}},  // 3. 抓取点
+            {JOINT, {1.571, 1.414, -0.559, 1.536, 1.570, 0.751}},  // 2. 预抓取点
+            {JOINT, {1.030, 1.431, -0.593, 1.134, 1.204, 0.628}},  // 3. 抓取点
             {GRIPPER_CLOSE, {}},  // 4. 关闭夹爪（抓起物体）
             {JOINT, {1.047, 1.152, -0.785, 1.361, 1.065, 1.169}},  // 5. 抬升
             {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}                // 6. 返回原点
@@ -64,8 +64,8 @@ public:
         // 动作3: 放在左边 (mode=3)
         left_place_sequence_ = {
             {GRIPPER_CLOSE, {}},   // 1. 关闭夹爪
-            {JOINT, {-1.239, 0.873, -0.506, -1.030, 0.698, -0.925}},  // 2. 预放置点
-            {JOINT, {-1.239, 1.117, -0.332, -0.733, 0.960, -0.489}},  // 3. 放置点
+            {JOINT, {-1.292, 0.925, -0.541, -0.995, 0.820, -0.908}},  // 2. 预放置点
+            {JOINT, {-1.309, 1.152, -0.367, -0.803, 1.182, -0.506}},  // 3. 放置点
             {GRIPPER_OPEN, {}},  // 4. 打开夹爪（抓住物体）
             {JOINT, {-1.239, 0.873, -0.506, -1.030, 0.698, -0.925}},  // 5. 抬升
             {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}                // 6. 返回原点
@@ -74,8 +74,8 @@ public:
         // 动作4: 从左边拿起 (mode=4)
         left_pick_sequence_ = {
             {GRIPPER_OPEN, {}},   // 1. 打开夹爪
-            {JOINT, {-1.990, 0.855, 0.000, -1.361, 1.414, -0.698}},  // 2. 预放置点
-            {JOINT, {-1.187, 1.239, -0.384, -0.646, 0.995, -0.401}},  // 3. 放置点
+            {JOINT, {-1.990, 0.925,  0.000, -1.327, 1.431, -0.611}},  // 2. 预放置点
+            {JOINT, {-1.169, 1.292, -0.367, -0.611, 1.065, -0.332}},  // 3. 放置点
             {GRIPPER_CLOSE, {}},  // 4. 关闭夹爪（抓住物体）
             {JOINT, {-1.204, 0.925, -0.559, -0.995, 0.646, -0.908}},  // 5. 抬升
             {JOINT, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}                // 6. 返回原点
@@ -269,7 +269,7 @@ private:
         if (current_step_ >= static_cast<int>(current_sequence_.size()))
         {
             RCLCPP_INFO(node_->get_logger(), "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!状态机序列执行完成!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            PublishProcessStatus(0);
+            PublishProcessStatus(6);
             sequence_active_ = false;
             current_step_ = 0;
             current_sequence_.clear();
@@ -284,7 +284,6 @@ private:
     void JointStateCallback(const JointState::SharedPtr msg)
     {
         int mode = msg->arm_ctrl_mode;
-        mode =3;
         if (mode == 0)
         {
             if (sequence_active_)
