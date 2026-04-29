@@ -1,12 +1,7 @@
-from glob import glob
 from setuptools import find_packages, setup
 import os
-
-<<<<<<< Updated upstream
-package_name = 'asr'
-=======
-package_name = 'energy_rec'
->>>>>>> Stashed changes
+from glob import glob
+package_name = 'voice_picture_detect'
 
 setup(
     name=package_name,
@@ -16,8 +11,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        # 添加下面这一行：将 energy_rec 目录下的所有 .pt 文件安装到 share/energy_rec/
-        (os.path.join('share', package_name), glob('energy_rec/*.pt')),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.xml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -32,11 +26,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-<<<<<<< Updated upstream
-            'asr_node=asr.asr:main'
-=======
-            'energy_rec_node = energy_rec.energy_rec:main',
->>>>>>> Stashed changes
+            'voice_picture_detect_node=voice_picture_detect.voice_picture_detect:main',
+            'rgb_picture_capture_node=voice_picture_detect.rgb_picture_capture:main',
         ],
     },
 )

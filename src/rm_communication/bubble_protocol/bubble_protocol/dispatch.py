@@ -21,7 +21,7 @@ from bubble_protocol.hardware import RobotSerial
 from bubble_protocol.robot_status import RobotStatus
 from rmctrl_msgs.msg import  Imu  
 from rmctrl_msgs.msg import ArmCtrlData
-
+from rmctrl_msgs.msg import VoiceControl
 
 class RobotAPI(Node):
     """Generate a new BCP core.
@@ -100,7 +100,8 @@ class RobotAPI(Node):
                 Twist, '/odom', self.ex_odom_callback, 10)
             self.joint_state_sub = self.create_subscription(
                 ArmCtrlData, '/joint_cmd_from_moveit2', self.ex_joint_state_sub_from_moveit2_callback, 10)
-
+            self.voice_control_sub = self.create_subscription(
+                VoiceControl, '/chassis_speed', self.ex_voice_control_callback, 10)
     def gimbal_callback(self, msg: Imu) -> None:
         mode = 1
         self.robot_serial.send_data(
@@ -137,6 +138,11 @@ class RobotAPI(Node):
         joint_cmd_sub_from_moveit2_list.append(msg.gripper_ctrl)
         joint_cmd_sub_from_moveit2_list.append(msg.auto_state)
         joint_cmd_sub_from_moveit2_list.append(msg.arm_ctrl_process_state)
-
-
         self.robot_serial.send_data("joint_cmd_from_moveit2", joint_cmd_sub_from_moveit2_list)
+        
+        print("接收到上位机对下位机语音控制的命令,现在通过串口发送出去")
+        voice_control_list = []
+        voice_control_list.append(msg.vx)
+        voice_control_list.append(msg.vy)
+        voice_control_list.append(msg.vw)
+        self.robot_serial.send_data("voice_control", voice_control_list)

@@ -88,17 +88,17 @@ sudo apt install ros-humble-moveit-*
 
 
 
-## 如何配置深度相机环境
-#一、配必要文件
+## 如何配置深度相机环境  
+#一、配必要文件  
 1.sudo apt install libgflags-dev  
-2.sudo apt install ros-$ROS_DISTRO-image-geometry 
-3.sudo apt install ros-$ROS_DISTRO-camera-info-manager
-4.sudo apt install ros-$ROS_DISTRO-image-transport 
-5.sudo apt install ros-$ROS_DISTRO-image-publisher 
-6.sudo apt install libgoogle-glog-dev 
-7.sudo apt install libusb-1.0-0-dev 
-8.sudo apt install libeigen3-dev
-9.sudo apt install -y nlohmann-json3-dev
+2.sudo apt install ros-$ROS_DISTRO-image-geometry  
+3.sudo apt install ros-$ROS_DISTRO-camera-info-manager  
+4.sudo apt install ros-$ROS_DISTRO-image-transport  
+5.sudo apt install ros-$ROS_DISTRO-image-publisher  
+6.sudo apt install libgoogle-glog-dev  
+7.sudo apt install libusb-1.0-0-dev  
+8.sudo apt install libeigen3-dev  
+9.sudo apt install -y nlohmann-json3-dev  
 
 cd/Enginerr/src/rm_visual
 git clone https://github.com/libuvc/libuvc.git
@@ -123,6 +123,21 @@ source ./install/setup.bash
 ros2 launch astra_camera astra.launch.xml
 
 
+# 配置语音系统环境  
+## 一、api的部署  
+###注意： 本功能包从2026.4.4日开始开发   由于api只有免费额度三个月 届时api会到期  所以后续开发需要自己接入api 
+###针对api 的个人订阅 只需要改一下tts 和asr 的.py文件中的 appkeyid和appkey secret就好了 具体操作如下  
+1.登陆下列网站  
+https://account.aliyun.com/login/login.htm?oauth_callback=https%3A%2F%2Fmyaccount.console.aliyun.com%2Foverview&clearRedirectCookie=1&lang=zh  
+2.鼠标移到头像右上角 点开权限与安全中的 AccessKEY  
+3.点击创建appkey  然后复制到tts/tts.py 和asr/asr.py就可以了  
+##二、配置环境  
+1.pip3 install sounddevice  
+2.sudo apt update  
+3.sudo apt install portaudio19-dev  
+4.pip3 install git+https://github.com/aliyun/alibabacloud-nls-python-sdk.git  
+5.pip install aliyun-python-sdk-core  
 
 疑问:
 1、video的urdf有ros2_control,还有为什么不可以去掉<xacro:gripper_macro />
+

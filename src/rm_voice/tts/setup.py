@@ -1,12 +1,6 @@
-from glob import glob
 from setuptools import find_packages, setup
-import os
 
-<<<<<<< Updated upstream
-package_name = 'asr'
-=======
-package_name = 'energy_rec'
->>>>>>> Stashed changes
+package_name = 'tts'
 
 setup(
     name=package_name,
@@ -16,8 +10,6 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        # 添加下面这一行：将 energy_rec 目录下的所有 .pt 文件安装到 share/energy_rec/
-        (os.path.join('share', package_name), glob('energy_rec/*.pt')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -32,11 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-<<<<<<< Updated upstream
-            'asr_node=asr.asr:main'
-=======
-            'energy_rec_node = energy_rec.energy_rec:main',
->>>>>>> Stashed changes
+            'tts_node=tts.tts:main'
         ],
     },
 )

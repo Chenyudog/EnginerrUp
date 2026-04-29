@@ -2,11 +2,7 @@ from glob import glob
 from setuptools import find_packages, setup
 import os
 
-<<<<<<< Updated upstream
 package_name = 'asr'
-=======
-package_name = 'energy_rec'
->>>>>>> Stashed changes
 
 setup(
     name=package_name,
@@ -32,11 +28,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-<<<<<<< Updated upstream
             'asr_node=asr.asr:main'
-=======
-            'energy_rec_node = energy_rec.energy_rec:main',
->>>>>>> Stashed changes
         ],
     },
 )

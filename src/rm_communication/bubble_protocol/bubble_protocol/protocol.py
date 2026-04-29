@@ -216,7 +216,13 @@ dev_error_info["error_level"] = [TYPE_FOR_CTYPE["uint8"], 0, 1],
 dev_error_info["error_module"] = [TYPE_FOR_CTYPE["uint8"], 0, 1],
 dev_error_info["error_code"] = [TYPE_FOR_CTYPE["uint8"], 0, 1],
 
+voice_control_info = OrderedDict()
+voice_control_info["speed_vx"] = [TYPE_FOR_CTYPE["int32"], 0, 10000]
+voice_control_info["speed_vy"] = [TYPE_FOR_CTYPE["int32"], 0, 10000]
+voice_control_info["speed_vw"] = [TYPE_FOR_CTYPE["int32"], 0, 10000]
+
 ID = {
+
     "chassis_cmd_from_mcu": [0x10, chassis_info],
     "chassis_odom": [0x11, odom_info],#1
     "chassis_ctrl": [0x12, chassis_ctrl_info],
@@ -227,6 +233,8 @@ ID = {
 
     "robot_command": [0x34, robot_command_info],
     "client_map_command_command": [0x35, client_map_command_command_info],
+
+    "voice_control": [0x38, voice_control_info],
 
     "barrel": [0x40, shooter_info],
 
@@ -246,6 +254,7 @@ STATUS = {
     "joint_state_sub_from_mcu": copy.deepcopy(gimbal_info),
     "joint_cmd_from_moveit2": copy.deepcopy(gimbal_ctrl_info),
     "chassis_cmd_from_mcu": copy.deepcopy(chassis_info),
+    "voice_control": copy.deepcopy(voice_control_info),
     "chassis_odom": copy.deepcopy(odom_info),
     "chassis_imu": copy.deepcopy(chassis_imu_info),
     "chassis_ctrl": copy.deepcopy(chassis_ctrl_info),
