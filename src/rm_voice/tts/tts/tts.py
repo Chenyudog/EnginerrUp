@@ -11,10 +11,9 @@ from std_msgs.msg import String
 
 # ===================== 阿里云配置 =====================
 URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-TOKEN = "3e35c5af174242259d0a8d5ccd3dabe3"
-APPKEY = "zvNV8ngJlGovddWG"
-
-# ===================== 工具函数 =====================
+TOKEN = "faeccb3e688049da8d72ef97759b9ebd"
+APPKEY = "JzdfrPXBjvbNsU7c"
+# ===================== 工具函数 ======s===============
 def pcm2wav(pcm_path, wav_path):
     with open(pcm_path, 'rb') as pcmfile:
         pcmdata = pcmfile.read()

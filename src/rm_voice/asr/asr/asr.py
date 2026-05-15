@@ -17,8 +17,8 @@ class OnlineASRNode(Node):
 
         # 阿里云配置
         self.URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-        self.TOKEN = "3e35c5af174242259d0a8d5ccd3dabe3"
-        self.APPKEY = "zvNV8ngJlGovddWG"
+        self.TOKEN = "faeccb3e688049da8d72ef97759b9ebd"
+        self.APPKEY = "JzdfrPXBjvbNsU7c"
 
         self.publisher_ = self.create_publisher(String, "/recognized_text", 10)
         self.audio_queue = queue.Queue()
