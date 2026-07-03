@@ -9,7 +9,7 @@ import numpy as np
 import nls
 import json
 import sys
-
+from .get_token import *
 class OnlineASRNode(Node):
     def __init__(self):
         super().__init__('asr_node')
@@ -17,7 +17,7 @@ class OnlineASRNode(Node):
 
         # 阿里云配置
         self.URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-        self.TOKEN = "faeccb3e688049da8d72ef97759b9ebd"
+        self.TOKEN = token
         self.APPKEY = "JzdfrPXBjvbNsU7c"
 
         self.publisher_ = self.create_publisher(String, "/recognized_text", 10)

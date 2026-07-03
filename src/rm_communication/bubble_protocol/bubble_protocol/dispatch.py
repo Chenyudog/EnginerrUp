@@ -140,6 +140,9 @@ class RobotAPI(Node):
         joint_cmd_sub_from_moveit2_list.append(msg.arm_ctrl_process_state)
         self.robot_serial.send_data("joint_cmd_from_moveit2", joint_cmd_sub_from_moveit2_list)
         
+
+
+    def ex_voice_control_callback(self, msg: VoiceControl):
         print("接收到上位机对下位机语音控制的命令,现在通过串口发送出去")
         voice_control_list = []
         voice_control_list.append(msg.vx)

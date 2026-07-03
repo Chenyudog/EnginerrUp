@@ -8,10 +8,10 @@ import subprocess
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-
+from .get_token import *
 # ===================== 阿里云配置 =====================
 URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-TOKEN = "faeccb3e688049da8d72ef97759b9ebd"
+TOKEN = token
 APPKEY = "JzdfrPXBjvbNsU7c"
 # ===================== 工具函数 ======s===============
 def pcm2wav(pcm_path, wav_path):
