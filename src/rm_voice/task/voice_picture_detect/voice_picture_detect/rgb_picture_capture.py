@@ -15,7 +15,7 @@ class RgbPictureCapture(Node):
         current_file_dir = os.path.dirname(os.path.abspath(__file__))
         
         # 拼接：当前目录 / picture
-        self.save_path = "/home/ubuntu/EnginerrUp/src/rm_voice/voice_picture_detect/picture"
+        self.save_path = "/home/cyd/EnginerrUp/src/rm_voice/task/voice_picture_detect/picture"
         os.makedirs(self.save_path, exist_ok=True)
 
         # 缓存最新RGB画面
@@ -24,7 +24,7 @@ class RgbPictureCapture(Node):
         # 订阅语音识别
         self.text_sub = self.create_subscription(
             String,
-            "/recognized_text",
+            "/picture_capture",
             self.text_callback,
             10
         )

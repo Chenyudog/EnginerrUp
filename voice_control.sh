@@ -1,5 +1,4 @@
 cmds=(
-	"ros2 run asr asr_node" #语音识别
 	"ros2 run chassis_control chassis_control_node" #语音控制底盘
 	"ros2 launch bubble_protocol engineer_up_serial_launch.py serial_port:=/dev/ttyACM0"  # 打开上下位机通信串口
 	"ros2 run engineer_info engineer_info_node" #工程车个性化表达
@@ -7,6 +6,7 @@ cmds=(
 	"ros2 run tts tts_node" #语音合成
 	"ros2 run task_scheduling task_scheduling_node" #调度任务节点
 	"ros2 run deepseek_answer deepseek_answer_node" #deepseek节点
+	"ros2 run asr asr_node" #语音识别
      )
      
 for cmd in "${cmds[@]}";

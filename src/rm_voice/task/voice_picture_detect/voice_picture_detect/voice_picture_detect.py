@@ -5,8 +5,8 @@ import rclpy
 from std_msgs.msg import String  
 from rclpy.node import Node
 
-local_path = "/home/ubuntu/EnginerrUp/src/rm_voice/voice_picture_detect/picture/picture.png"
-picture_dir="/home/ubuntu/EnginerrUp/src/rm_voice/voice_picture_detect/picture"
+local_path = "/home/cyd/EnginerrUp/src/rm_voice/task/voice_picture_detect/picture/picture.png"
+picture_dir="/home/cyd/EnginerrUp/src/rm_voice/task/voice_picture_detect/picture"
 image_path = f"file://{local_path}"
 class VoicePictureCapture(Node):
     def __init__(self):

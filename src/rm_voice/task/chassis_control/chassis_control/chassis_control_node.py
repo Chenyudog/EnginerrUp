@@ -53,7 +53,6 @@ class ChassisControlNode(Node):
     def listener_callback(self, msg):
         text = msg.data.strip()
         self.get_logger().info(f'识别到: {text}')
-
         self.distance = self.parse_distance(text)
 
         # 动作指令
