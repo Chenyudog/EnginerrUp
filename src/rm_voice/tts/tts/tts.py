@@ -74,6 +74,9 @@ class TestTts:
 
 # ===================== ROS2 TTS朗读节点 =====================
 class TTS(Node):
+    # 播放结束后延迟恢复ASR的时间（秒），用于等待扬声器尾音和房间混响消散
+    MUTE_DELAY_SECONDS = 1.5
+    
     def __init__(self):
         super().__init__('tts_node')
 
@@ -104,8 +107,13 @@ class TTS(Node):
         
         self.get_logger().info("✅ TTS 语音播报节点已启动，等待消息...")
 
-    def tts_callback(self, msg):
-        text = msg.data
+    def speak_with_mute(self, text, synthesis_wait):
+        """带静音控制的语音播放方法
+        
+        Args:
+            text: 要播放的文本
+            synthesis_wait: 等待语音合成的时间（秒）
+        """
         self.get_logger().info(f"📢 收到播报：{text}")
 
         try:
@@ -123,7 +131,7 @@ class TTS(Node):
             t.start(text)
 
             # 等待合成
-            time.sleep(2)
+            time.sleep(synthesis_wait)
 
             # 转格式 + 播放
             pcm2wav(pcm_path, wav_path)
@@ -135,6 +143,10 @@ class TTS(Node):
             if os.path.exists(wav_path):
                 os.remove(wav_path)
 
+            # 等待扬声器尾音和房间混响消散
+            self.get_logger().info(f"⏳ 等待 {self.MUTE_DELAY_SECONDS} 秒，让声音消散...")
+            time.sleep(self.MUTE_DELAY_SECONDS)
+
             # 发布播放状态：播放结束
             speaking_msg.data = False
             self.tts_speaking_publisher.publish(speaking_msg)
@@ -145,90 +157,15 @@ class TTS(Node):
             speaking_msg = Bool()
             speaking_msg.data = False
             self.tts_speaking_publisher.publish(speaking_msg)
+
+    def tts_callback(self, msg):
+        self.speak_with_mute(msg.data, 2)
 
     def tts_picture_description_callback(self, msg):
-        text = msg.data
-        self.get_logger().info(f"📢 收到播报：{text}")
+        self.speak_with_mute(msg.data, 5)
 
-        try:
-            # 发布播放状态：开始播放
-            speaking_msg = Bool()
-            speaking_msg.data = True
-            self.tts_speaking_publisher.publish(speaking_msg)
-
-            # 临时文件路径
-            pcm_path = os.path.join(os.path.dirname(__file__), 'temp_tts.pcm')
-            wav_path = os.path.join(os.path.dirname(__file__), 'temp_tts.wav')
-
-            # 合成语音
-            t = TestTts("tts", pcm_path)
-            t.start(text)
-
-            # 等待合成
-            time.sleep(5)
-
-            # 转格式 + 播放
-            pcm2wav(pcm_path, wav_path)
-            play_audio(wav_path)
-
-            # 删除临时文件
-            if os.path.exists(pcm_path):
-                os.remove(pcm_path)
-            if os.path.exists(wav_path):
-                os.remove(wav_path)
-
-            # 发布播放状态：播放结束
-            speaking_msg.data = False
-            self.tts_speaking_publisher.publish(speaking_msg)
-
-        except Exception as e:
-            self.get_logger().error(f"播放失败：{str(e)}")
-            # 异常时也要恢复播放状态
-            speaking_msg = Bool()
-            speaking_msg.data = False
-            self.tts_speaking_publisher.publish(speaking_msg)
-
-    def engineer_info_callback(self,msg):
-        text = msg.data
-        self.get_logger().info(f"📢 收到播报：{text}")
-
-        try:
-            # 发布播放状态：开始播放
-            speaking_msg = Bool()
-            speaking_msg.data = True
-            self.tts_speaking_publisher.publish(speaking_msg)
-
-            # 临时文件路径
-            pcm_path = os.path.join(os.path.dirname(__file__), 'temp_tts.pcm')
-            wav_path = os.path.join(os.path.dirname(__file__), 'temp_tts.wav')
-
-            # 合成语音
-            t = TestTts("tts", pcm_path)
-            t.start(text)
-
-            # 等待合成
-            time.sleep(2)
-
-            # 转格式 + 播放
-            pcm2wav(pcm_path, wav_path)
-            play_audio(wav_path)
-
-            # 删除临时文件
-            if os.path.exists(pcm_path):
-                os.remove(pcm_path)
-            if os.path.exists(wav_path):
-                os.remove(wav_path)
-
-            # 发布播放状态：播放结束
-            speaking_msg.data = False
-            self.tts_speaking_publisher.publish(speaking_msg)
-
-        except Exception as e:
-            self.get_logger().error(f"播放失败：{str(e)}")
-            # 异常时也要恢复播放状态
-            speaking_msg = Bool()
-            speaking_msg.data = False
-            self.tts_speaking_publisher.publish(speaking_msg)
+    def engineer_info_callback(self, msg):
+        self.speak_with_mute(msg.data, 2)
 # ===================== 主函数 =====================
 def main(args=None):
     rclpy.init(args=args)
