@@ -7,7 +7,7 @@ import wave
 import subprocess
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 from .get_token import *
 # ===================== 阿里云配置 =====================
 URL = "wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
@@ -99,6 +99,9 @@ class TTS(Node):
             self.engineer_info_callback,
             10
         )
+        # 发布TTS播放状态，用于控制ASR静音
+        self.tts_speaking_publisher = self.create_publisher(Bool, '/tts_speaking', 10)
+        
         self.get_logger().info("✅ TTS 语音播报节点已启动，等待消息...")
 
     def tts_callback(self, msg):
@@ -106,6 +109,11 @@ class TTS(Node):
         self.get_logger().info(f"📢 收到播报：{text}")
 
         try:
+            # 发布播放状态：开始播放
+            speaking_msg = Bool()
+            speaking_msg.data = True
+            self.tts_speaking_publisher.publish(speaking_msg)
+
             # 临时文件路径
             pcm_path = os.path.join(os.path.dirname(__file__), 'temp_tts.pcm')
             wav_path = os.path.join(os.path.dirname(__file__), 'temp_tts.wav')
@@ -127,14 +135,27 @@ class TTS(Node):
             if os.path.exists(wav_path):
                 os.remove(wav_path)
 
+            # 发布播放状态：播放结束
+            speaking_msg.data = False
+            self.tts_speaking_publisher.publish(speaking_msg)
+
         except Exception as e:
             self.get_logger().error(f"播放失败：{str(e)}")
+            # 异常时也要恢复播放状态
+            speaking_msg = Bool()
+            speaking_msg.data = False
+            self.tts_speaking_publisher.publish(speaking_msg)
 
     def tts_picture_description_callback(self, msg):
         text = msg.data
         self.get_logger().info(f"📢 收到播报：{text}")
 
         try:
+            # 发布播放状态：开始播放
+            speaking_msg = Bool()
+            speaking_msg.data = True
+            self.tts_speaking_publisher.publish(speaking_msg)
+
             # 临时文件路径
             pcm_path = os.path.join(os.path.dirname(__file__), 'temp_tts.pcm')
             wav_path = os.path.join(os.path.dirname(__file__), 'temp_tts.wav')
@@ -156,14 +177,27 @@ class TTS(Node):
             if os.path.exists(wav_path):
                 os.remove(wav_path)
 
+            # 发布播放状态：播放结束
+            speaking_msg.data = False
+            self.tts_speaking_publisher.publish(speaking_msg)
+
         except Exception as e:
             self.get_logger().error(f"播放失败：{str(e)}")
+            # 异常时也要恢复播放状态
+            speaking_msg = Bool()
+            speaking_msg.data = False
+            self.tts_speaking_publisher.publish(speaking_msg)
 
     def engineer_info_callback(self,msg):
         text = msg.data
         self.get_logger().info(f"📢 收到播报：{text}")
 
         try:
+            # 发布播放状态：开始播放
+            speaking_msg = Bool()
+            speaking_msg.data = True
+            self.tts_speaking_publisher.publish(speaking_msg)
+
             # 临时文件路径
             pcm_path = os.path.join(os.path.dirname(__file__), 'temp_tts.pcm')
             wav_path = os.path.join(os.path.dirname(__file__), 'temp_tts.wav')
@@ -185,8 +219,16 @@ class TTS(Node):
             if os.path.exists(wav_path):
                 os.remove(wav_path)
 
+            # 发布播放状态：播放结束
+            speaking_msg.data = False
+            self.tts_speaking_publisher.publish(speaking_msg)
+
         except Exception as e:
             self.get_logger().error(f"播放失败：{str(e)}")
+            # 异常时也要恢复播放状态
+            speaking_msg = Bool()
+            speaking_msg.data = False
+            self.tts_speaking_publisher.publish(speaking_msg)
 # ===================== 主函数 =====================
 def main(args=None):
     rclpy.init(args=args)

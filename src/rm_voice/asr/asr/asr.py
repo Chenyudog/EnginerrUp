@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 import time
 import queue
 import sounddevice as sd
@@ -22,15 +22,38 @@ class OnlineASRNode(Node):
 
         self.publisher_ = self.create_publisher(String, "/recognized_text", 10)
         self.audio_queue = queue.Queue()
+        
+        # TTS播放状态，用于静音ASR
+        self.is_tts_speaking = False
+        self.tts_speaking_sub = self.create_subscription(
+            Bool,
+            '/tts_speaking',
+            self.tts_speaking_callback,
+            10
+        )
+        
         self.start_recognizer()
 
     def audio_callback(self, indata, frames, time, status):
         self.audio_queue.put(indata.copy())
 
+    def tts_speaking_callback(self, msg):
+        self.is_tts_speaking = msg.data
+        if self.is_tts_speaking:
+            self.get_logger().info("🔇 TTS正在播放，ASR暂时静音")
+        else:
+            self.get_logger().info("🔊 TTS播放结束，ASR恢复监听")
+
     def on_result(self, message, *args):
         try:
             data = json.loads(message)
             text = data["payload"]["result"]
+            
+            # 如果TTS正在播放，则不发布识别结果
+            if self.is_tts_speaking:
+                self.get_logger().info(f"> [已过滤] {text}")
+                return
+            
             self.get_logger().info(f"> {text}")
             msg = String()
             msg.data = text
